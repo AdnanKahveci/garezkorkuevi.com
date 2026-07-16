@@ -1,0 +1,100 @@
+---
+// FlashlightCursor - El feneri imleci (masaüstü)
+---
+
+<div id="flashlight-overlay" class="flashlight" aria-hidden="true"></div>
+
+<script>
+  import { isReducedMotion, isMobile } from '@/lib/scare-engine/ExperienceState';
+  import { isLowPerfMode, onAnimationFrame } from '@/lib/animation/performance';
+
+  function initFlashlight() {
+    if (isMobile() || isReducedMotion() || isLowPerfMode()) return;
+
+    const overlay = document.getElementById('flashlight-overlay');
+    if (!overlay) return;
+
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let currentX = mouseX;
+    let currentY = mouseY;
+    let enabled = false;
+
+    const safeZones = ['form', 'nav', 'reservation', 'contact', 'menu', 'header'];
+
+    function enable() {
+      if (enabled) return;
+      enabled = true;
+      overlay.classList.add('flashlight--active');
+    }
+
+    function updateGradient() {
+      overlay.style.background = `radial-gradient(circle 280px at ${currentX}px ${currentY}px, transparent 0%, transparent 120px, rgba(0,0,0,0.12) 220px, rgba(0,0,0,0.22) 100%)`;
+    }
+
+    function waitForExperience() {
+      if (document.body.classList.contains('experience-active')) {
+        enable();
+        updateGradient();
+        return;
+      }
+      const observer = new MutationObserver(() => {
+        if (document.body.classList.contains('experience-active')) {
+          enable();
+          updateGradient();
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      if (!enabled) return;
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      const target = e.target as HTMLElement;
+      const inSafeZone = safeZones.some((zone) =>
+        target.closest(`[data-safe-zone="${zone}"], .${zone}, nav, form, .reservation-area, header`)
+      );
+      overlay.classList.toggle('flashlight--dimmed', !!inSafeZone);
+    });
+
+    const cleanup = onAnimationFrame(() => {
+      if (!enabled) return;
+      currentX += (mouseX - currentX) * 0.15;
+      currentY += (mouseY - currentY) * 0.15;
+      updateGradient();
+    });
+
+    window.addEventListener('beforeunload', cleanup);
+    waitForExperience();
+  }
+
+  initFlashlight();
+</script>
+
+<style>
+  .flashlight {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .flashlight--active {
+    opacity: 1;
+  }
+  .flashlight--dimmed {
+    opacity: 0.4;
+  }
+  body:not(.experience-active) .flashlight {
+    display: none !important;
+  }
+  @media (max-width: 768px), (pointer: coarse), (prefers-reduced-motion: reduce) {
+    .flashlight { display: none !important; }
+  }
+</style>

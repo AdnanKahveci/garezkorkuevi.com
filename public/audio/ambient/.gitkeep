@@ -1,0 +1,8 @@
+# Ambient audio files
+# Place .mp3 or .ogg files here for production:
+# - ambient-hum.mp3
+# - wind.mp3
+# - metal-distant.mp3
+# - whisper.mp3
+#
+# Development uses Web Audio API procedural generation.

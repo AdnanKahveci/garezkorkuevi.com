@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 160" fill="none">
+  <defs>
+    <filter id="g4" x="-30%" y="-10%" width="160%" height="120%">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#990000" flood-opacity="0.85"/>
+    </filter>
+  </defs>
+  <!-- Dev pen�e / uzanan el g�lgesi -->
+  <g filter="url(#g4)" fill="#0a0505">
+    <ellipse cx="45" cy="130" rx="22" ry="14"/>
+    <path d="M28 125 C18 90 22 50 30 20 C32 12 40 14 38 24 C32 50 30 90 36 124 Z"/>
+    <path d="M40 122 C38 80 42 40 48 12 C50 4 58 8 54 18 C50 42 48 80 50 120 Z"/>
+    <path d="M52 120 C58 85 68 48 78 22 C82 14 90 20 84 28 C76 50 68 85 62 118 Z"/>
+    <path d="M58 125 C70 100 88 78 96 58 C100 50 108 56 102 64 C94 80 80 100 68 124 Z"/>
+    <!-- Ba_parmak -->
+    <path d="M24 128 C8 118 0 100 6 88 C10 82 18 88 16 96 C14 108 22 120 30 126 Z"/>
+  </g>
+  <ellipse cx="32" cy="28" rx="2" ry="1.5" fill="#ff3030" opacity="0.9"/>
+  <ellipse cx="48" cy="18" rx="2" ry="1.5" fill="#ff2020" opacity="0.85"/>
+  <ellipse cx="76" cy="30" rx="2" ry="1.5" fill="#ff2828" opacity="0.9"/>
+</svg>

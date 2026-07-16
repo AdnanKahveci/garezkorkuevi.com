@@ -1,0 +1,180 @@
+---
+import AudioController from './effects/AudioController.astro';
+import GlitchText from './effects/GlitchText.astro';
+
+const navItems = [
+  { href: '/#anasayfa', label: 'Ana Sayfa' },
+  { href: '/#hikaye', label: 'Hikâye' },
+  { href: '/#oyun', label: 'Oyun' },
+  { href: '/#galeri-bolum', label: 'Galeri' },
+  { href: '/#rezervasyon', label: 'Rezervasyon' },
+];
+---
+
+<header class="site-header" data-safe-zone="header">
+  <div class="site-header__inner">
+    <a href="/#anasayfa" class="site-header__logo" data-nav-section>
+      <GlitchText text="GAREZ" tag="span" class="site-header__logo-text" />
+    </a>
+
+    <nav class="site-nav" id="site-nav" aria-label="Ana navigasyon" data-safe-zone="nav">
+      <ul class="site-nav__list">
+        {navItems.map((item) => (
+          <li>
+            <a href={item.href} class="site-nav__link" data-nav-section>{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="site-header__controls">
+      <AudioController />
+      <button type="button" class="site-header__menu-btn" id="menu-toggle" aria-label="Menüyü aç" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  import { setMenuOpen } from '@/lib/scare-engine/JumpscareEngine';
+
+  function closeMobileNav() {
+    const toggle = document.getElementById('menu-toggle');
+    const nav = document.getElementById('site-nav');
+    if (!toggle || !nav) return;
+    nav.classList.remove('site-nav--open');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Menüyü aç');
+    setMenuOpen(false);
+  }
+
+  function scrollToHash(hash: string) {
+    const id = hash.replace(/^#/, '');
+    if (!id || id === 'anasayfa') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function initHeader() {
+    const toggle = document.getElementById('menu-toggle');
+    const nav = document.getElementById('site-nav');
+    if (!toggle || !nav) return;
+
+    toggle.addEventListener('click', () => {
+      const open = nav.classList.toggle('site-nav--open');
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Menüyü kapat' : 'Menüyü aç');
+      setMenuOpen(open);
+    });
+
+    document.querySelectorAll<HTMLAnchorElement>('a[data-nav-section]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        if (!href) return;
+
+        const url = new URL(href, window.location.href);
+        const samePage = url.pathname === window.location.pathname || (url.pathname === '/' && window.location.pathname === '/');
+
+        if (samePage && url.hash) {
+          e.preventDefault();
+          closeMobileNav();
+          history.pushState(null, '', url.hash);
+          scrollToHash(url.hash);
+        } else if (url.hash && url.pathname === '/') {
+          // Galeri vb. başka sayfadan ana sayfa bölümüne git
+          closeMobileNav();
+        }
+      });
+    });
+
+    // Sayfa /#bolum ile açıldıysa ilgili başlığa kaydır
+    if (window.location.hash) {
+      requestAnimationFrame(() => scrollToHash(window.location.hash));
+    }
+  }
+
+  initHeader();
+</script>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(18, 8, 8, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(196,30,30,0.2);
+  }
+  .site-header__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .site-header__logo {
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: #e02020;
+    letter-spacing: 0.2em;
+  }
+  .site-nav__list {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .site-nav__link {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+  .site-nav__link:hover { color: #fff; }
+  .site-header__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .site-header__menu-btn {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .site-header__menu-btn span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #ccc;
+  }
+  @media (max-width: 768px) {
+    .site-nav {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      right: 0;
+      background: rgba(10,10,10,0.95);
+      padding: 1rem;
+      transform: translateY(-120%);
+      transition: transform 0.3s;
+    }
+    .site-nav--open { transform: translateY(0); }
+    .site-nav__list { flex-direction: column; gap: 0.75rem; }
+    .site-header__menu-btn { display: flex; }
+  }
+</style>

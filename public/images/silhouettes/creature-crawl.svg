@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100" fill="none">
+  <defs>
+    <filter id="g2" x="-15%" y="-20%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#a00000" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+  <!-- S�r�nen d�rt ayakl1 g�lge yarat1k -->
+  <g filter="url(#g2)" fill="#0c0606">
+    <ellipse cx="85" cy="48" rx="42" ry="18"/>
+    <ellipse cx="48" cy="42" rx="22" ry="16"/>
+    <!-- Kafa / �ene -->
+    <path d="M28 40 C18 38 10 44 8 52 C6 58 12 60 18 56 C22 52 26 46 32 44 Z"/>
+    <!-- Sivri kulaklar -->
+    <path d="M38 28 L42 10 L48 30 Z"/>
+    <path d="M52 26 L58 8 L62 28 Z"/>
+    <!-- Bacaklar (s�r�nen) -->
+    <path d="M60 58 C50 72 42 88 38 96 L48 96 C52 84 58 70 66 60 Z"/>
+    <path d="M78 62 C74 78 70 90 68 98 L78 98 C80 88 82 74 86 62 Z"/>
+    <path d="M98 60 C102 76 108 90 114 98 L104 98 C100 88 96 74 92 60 Z"/>
+    <path d="M112 55 C122 68 132 82 140 92 L130 96 C124 84 116 70 108 56 Z"/>
+    <!-- Kuyruk / duman -->
+    <path d="M120 42 C140 30 152 38 156 52 C148 48 138 44 124 46 Z" opacity="0.85"/>
+  </g>
+  <circle cx="22" cy="46" r="3" fill="#ff2020"/>
+  <circle cx="32" cy="42" r="2.2" fill="#ff3030"/>
+  <path d="M12 54 L6 58 M14 56 L8 64 M16 58 L12 66" stroke="#1a0808" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

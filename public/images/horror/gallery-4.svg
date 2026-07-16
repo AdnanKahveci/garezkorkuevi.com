@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#111"/>
+  <text x="30" y="60" fill="#8b0000" font-size="24" font-family="monospace" opacity="0.4" transform="rotate(-5 30 60)">BURAYA G0RME</text>
+  <text x="50" y="150" fill="#666" font-size="16" font-family="monospace" opacity="0.3" transform="rotate(3 50 150)">03:17</text>
+  <text x="200" y="220" fill="#444" font-size="20" font-family="monospace" opacity="0.3">???</text>
+</svg>

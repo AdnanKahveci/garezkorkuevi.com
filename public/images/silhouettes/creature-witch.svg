@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 180" fill="none">
+  <defs>
+    <filter id="g3" x="-25%" y="-10%" width="150%" height="120%">
+      <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#7a0000" flood-opacity="0.8"/>
+    </filter>
+    <linearGradient id="cloak" x1="50" y1="20" x2="50" y2="180">
+      <stop offset="0%" stop-color="#1a0a0a"/>
+      <stop offset="100%" stop-color="#000"/>
+    </linearGradient>
+  </defs>
+  <!-- Pelerinli cad1 / u�an g�lge -->
+  <g filter="url(#g3)" fill="url(#cloak)">
+    <!-- ^apka -->
+    <path d="M50 8 L72 42 L28 42 Z"/>
+    <ellipse cx="50" cy="42" rx="28" ry="6"/>
+    <!-- Kafa -->
+    <ellipse cx="50" cy="52" rx="14" ry="12"/>
+    <!-- Geni_ pelerin -->
+    <path d="M36 58 C10 70 2 110 8 160 L28 155 C22 120 28 85 40 68 Z"/>
+    <path d="M64 58 C90 70 98 110 92 160 L72 155 C78 120 72 85 60 68 Z"/>
+    <path d="M40 62 C50 70 60 62 60 62 L70 150 L30 150 Z"/>
+    <!-- Uzanm1_ el -->
+    <path d="M68 85 C88 78 102 88 108 102 C110 108 102 110 100 104 C96 92 86 84 70 88 Z"/>
+  </g>
+  <circle cx="44" cy="50" r="2.8" fill="#ff1a1a"/>
+  <circle cx="56" cy="50" r="2.8" fill="#ff1a1a"/>
+  <path d="M44 58 Q50 64 56 58" stroke="#2a0000" stroke-width="1.2" fill="none"/>
+</svg>

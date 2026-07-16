@@ -1,0 +1,118 @@
+---
+// AudioController - Ses kontrol paneli
+---
+
+<div class="audio-controller" id="audio-controller">
+  <button
+    type="button"
+    class="audio-controller__toggle"
+    id="audio-toggle"
+    aria-label="Sesi aç/kapat"
+    title="Sesi aç/kapat"
+  >
+    <svg class="audio-icon audio-icon--on" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+    </svg>
+    <svg class="audio-icon audio-icon--off" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+    </svg>
+  </button>
+  <div class="audio-controller__slider-wrap" id="volume-slider-wrap">
+    <label for="volume-slider" class="sr-only">Ses seviyesi</label>
+    <input
+      type="range"
+      id="volume-slider"
+      class="audio-controller__slider"
+      min="0"
+      max="100"
+      value="100"
+      aria-label="Ses seviyesi"
+    />
+  </div>
+</div>
+
+<script>
+  import { audioManager } from '@/lib/audio/AudioManager';
+  import { bootstrapSoundExperience } from '@/lib/audio/bootstrapAudio';
+
+  function initAudioController() {
+    const toggle = document.getElementById('audio-toggle');
+    const slider = document.getElementById('volume-slider') as HTMLInputElement;
+    if (!toggle || !slider) return;
+
+    let enabled = true;
+    updateUI();
+
+    async function turnSoundOn() {
+      enabled = true;
+      await bootstrapSoundExperience();
+      updateUI();
+    }
+
+    toggle.addEventListener('click', async () => {
+      if (!audioManager.isContextRunning()) {
+        await turnSoundOn();
+        return;
+      }
+
+      enabled = !enabled;
+      audioManager.setMasterEnabled(enabled);
+      if (enabled) audioManager.startAmbient();
+      updateUI();
+    });
+
+    slider.addEventListener('input', () => {
+      audioManager.setChannelVolume('master', parseInt(slider.value) / 100);
+    });
+
+    function updateUI() {
+      const isOn = audioManager.isContextRunning();
+      toggle!.classList.toggle('audio-controller__toggle--muted', !isOn && !enabled);
+      slider!.disabled = !isOn && !enabled;
+      if (isOn) enabled = true;
+    }
+
+    window.addEventListener('audio-ready', () => {
+      enabled = true;
+      slider.value = '100';
+      audioManager.setChannelVolume('master', 1);
+      updateUI();
+    });
+  }
+
+  initAudioController();
+</script>
+
+<style>
+  .audio-controller {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .audio-controller__toggle {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #ccc;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s;
+  }
+  .audio-controller__toggle:hover { border-color: #c41e1e; }
+  .audio-icon--off { display: none; }
+  .audio-controller__toggle--muted .audio-icon--on { display: none; }
+  .audio-controller__toggle--muted .audio-icon--off { display: block; }
+  .audio-controller__slider {
+    width: 80px;
+    accent-color: #8b0000;
+    cursor: pointer;
+  }
+  .audio-controller__slider:disabled { opacity: 0.3; }
+  @media (max-width: 768px) {
+    .audio-controller__slider-wrap { display: none; }
+  }
+</style>

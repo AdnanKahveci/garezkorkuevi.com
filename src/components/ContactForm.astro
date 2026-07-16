@@ -1,0 +1,210 @@
+---
+import { WHATSAPP_NUMBER } from '@/config/contact';
+---
+
+<form
+  class="reservation-form"
+  id="HomeFormReservation"
+  data-safe-zone="form"
+  data-whatsapp={WHATSAPP_NUMBER}
+  novalidate
+>
+  <p class="reservation-form__title">Rezervasyon Yap</p>
+  <div class="reservation-form__row">
+    <div class="reservation-form__field reservation-form__field--name">
+      <label for="res-name" class="visually-hidden">Adınız</label>
+      <input
+        type="text"
+        id="res-name"
+        name="name"
+        placeholder="Adınız (isteğe bağlı)"
+        autocomplete="name"
+      />
+    </div>
+    <div class="reservation-form__field reservation-form__field--guests">
+      <label for="res-guests" class="visually-hidden">Kaç kişisiniz</label>
+      <select id="res-guests" name="guests" required>
+        <option value="" disabled selected>Kaç kişisiniz</option>
+        {Array.from({ length: 11 }, (_, i) => i + 2).map((n) => (
+          <option value={String(n)}>{n}</option>
+        ))}
+      </select>
+    </div>
+    <button type="submit" class="reservation-form__submit">REZERVASYON YAP</button>
+  </div>
+  <p class="reservation-form__hint">Talep WhatsApp üzerinden kısa mesaj olarak iletilir.</p>
+  <div class="reservation-form__status" id="reservation-status" role="status" aria-live="polite"></div>
+</form>
+
+<script>
+  import { buildReservationWhatsAppUrl } from '@/config/contact';
+
+  const form = document.getElementById('HomeFormReservation') as HTMLFormElement | null;
+  const status = document.getElementById('reservation-status');
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!form || !status) return;
+
+    const guests = (form.elements.namedItem('guests') as HTMLSelectElement).value;
+    const name = (form.elements.namedItem('name') as HTMLInputElement).value;
+
+    if (!guests) {
+      status.textContent = 'Lütfen kişi sayısını seçin.';
+      status.className = 'reservation-form__status reservation-form__status--error';
+      return;
+    }
+
+    status.textContent = 'WhatsApp açılıyor...';
+    status.className = 'reservation-form__status reservation-form__status--loading';
+
+    const url = buildReservationWhatsAppUrl(guests, name);
+    window.open(url, '_blank', 'noopener,noreferrer');
+
+    status.textContent = 'WhatsApp açıldı. Mesajı göndererek talebini tamamla.';
+    status.className = 'reservation-form__status reservation-form__status--success';
+  });
+</script>
+
+<style>
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .reservation-form {
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .reservation-form__title {
+    font-family: var(--font-display, Cinzel, serif);
+    font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e8e0d8;
+    margin: 0 0 1.25rem;
+  }
+
+  .reservation-form__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.65rem;
+  }
+
+  .reservation-form__field {
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+
+  .reservation-form__field--name {
+    flex: 1.2 1 180px;
+  }
+
+  .reservation-form__field--guests {
+    flex: 0 1 160px;
+  }
+
+  .reservation-form__field input,
+  .reservation-form__field select {
+    width: 100%;
+    height: 52px;
+    padding: 0 1rem;
+    background: #120e0e;
+    border: 1px solid #4a2828;
+    border-radius: 2px;
+    color: #e8e0d8;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    appearance: none;
+  }
+
+  .reservation-form__field select {
+    background-image: linear-gradient(45deg, transparent 50%, #c44 50%),
+      linear-gradient(135deg, #c44 50%, transparent 50%);
+    background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 12px) calc(50% - 3px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 2.25rem;
+    cursor: pointer;
+  }
+
+  .reservation-form__field input:focus,
+  .reservation-form__field select:focus {
+    outline: none;
+    border-color: #ff3b3b;
+    box-shadow: 0 0 0 1px rgba(255, 59, 59, 0.25);
+  }
+
+  .reservation-form__field input::placeholder {
+    color: #7a6565;
+  }
+
+  .reservation-form__submit {
+    flex: 0 1 auto;
+    min-width: 200px;
+    height: 52px;
+    padding: 0 1.75rem;
+    background: #8b0000;
+    color: #fff;
+    border: 1px solid #a01010;
+    border-radius: 2px;
+    font-family: var(--font-display, Cinzel, serif);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  }
+
+  .reservation-form__submit:hover {
+    background: #a80a0a;
+    box-shadow: 0 0 24px rgba(139, 0, 0, 0.45);
+  }
+
+  .reservation-form__submit:active {
+    transform: scale(0.98);
+  }
+
+  .reservation-form__hint {
+    margin: 0.85rem 0 0;
+    font-size: 0.8rem;
+    color: #8a7575;
+  }
+
+  .reservation-form__status {
+    margin-top: 0.65rem;
+    font-size: 0.85rem;
+    min-height: 1.2em;
+  }
+
+  .reservation-form__status--success { color: #5cba8a; }
+  .reservation-form__status--error { color: #e06060; }
+  .reservation-form__status--loading { color: #999; }
+
+  @media (max-width: 640px) {
+    .reservation-form__row {
+      flex-direction: column;
+    }
+
+    .reservation-form__field,
+    .reservation-form__field--name,
+    .reservation-form__field--guests,
+    .reservation-form__submit {
+      flex: 1 1 auto;
+      width: 100%;
+      min-width: 0;
+    }
+  }
+</style>

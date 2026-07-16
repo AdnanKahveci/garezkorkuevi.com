@@ -1,0 +1,72 @@
+---
+// SidePassShadow - Kenardan hızla geçen korkunç yüz
+interface Props {
+  direction?: 'left' | 'right';
+  top?: string;
+  size?: 'sm' | 'md' | 'lg';
+  trigger?: string;
+  src?: string;
+}
+const { direction = 'left', top = '40%', size = 'md', trigger = '', src } = Astro.props;
+
+const sizeMap = { sm: '160px', md: '260px', lg: '340px' };
+const heightMap = { sm: '200px', md: '320px', lg: '420px' };
+const faceSrc = src || '/images/jumpscare/garez-yuz.png';
+---
+
+<div
+  class={`side-shadow side-shadow--${direction} side-shadow--${size}`}
+  data-side-shadow
+  data-direction={direction}
+  data-trigger={trigger}
+  style={`top: ${top}; width: ${sizeMap[size]}; height: ${heightMap[size]};`}
+  aria-hidden="true"
+>
+  <img
+    src={faceSrc}
+    alt=""
+    class="side-shadow__img"
+    loading="eager"
+    decoding="async"
+  />
+</div>
+
+<style>
+  .side-shadow {
+    position: fixed;
+    left: 0;
+    z-index: 45;
+    pointer-events: none;
+    opacity: 0;
+    will-change: transform, opacity;
+    visibility: hidden;
+  }
+
+  .side-shadow--visible {
+    visibility: visible;
+  }
+
+  .side-shadow__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 22px rgba(180, 0, 0, 0.85)) contrast(1.2) brightness(1.05);
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .side-shadow--lg { display: none; }
+    .side-shadow__img {
+      filter: drop-shadow(0 0 14px rgba(160, 0, 0, 0.7)) contrast(1.15);
+      opacity: 0.95;
+    }
+  }
+
+  body.reduced-motion-active .side-shadow {
+    display: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .side-shadow { display: none !important; }
+  }
+</style>

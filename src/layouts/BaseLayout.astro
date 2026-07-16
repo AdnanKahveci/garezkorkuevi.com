@@ -1,0 +1,103 @@
+---
+import '@/styles/global.css';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import HorrorTransition from '@/components/effects/HorrorTransition.astro';
+import JumpscareController from '@/components/effects/JumpscareController.astro';
+import AtmosphereOverlay from '@/components/effects/AtmosphereOverlay.astro';
+import SidePassShadow from '@/components/effects/SidePassShadow.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Garez Korku Evi — Ödenmeyen Borçların Evi',
+  description = 'Garez Korku Evi: canlı aktörler, labirentler ve unutulmayan bir öç hikâyesi. Rezervasyon yap, hesabını ödemeye gel.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href="/audio/effects/ringtone.mp3" as="fetch" crossorigin="anonymous" />
+    <link rel="preload" href="/audio/effects/jumpscare.mp3" as="fetch" crossorigin="anonymous" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <title>{title}</title>
+  </head>
+  <body class="experience-active horror-live">
+    <script is:inline>
+      try {
+        if (matchMedia('(max-width:768px)').matches || 'ontouchstart' in window) {
+          document.documentElement.classList.add('lite-mode');
+          document.body.classList.add('mobile-perf');
+        }
+      } catch (e) {}
+    </script>
+
+    <AtmosphereOverlay />
+    <SidePassShadow direction="left" top="18%" trigger="#hikaye" src="/images/jumpscare/garez-yuz.png" />
+    <SidePassShadow direction="right" top="42%" trigger="#oyun" src="/images/jumpscare/garez-yuz.png" />
+    <SidePassShadow direction="left" top="28%" trigger="#deneyim" src="/images/jumpscare/garez-yuz.png" />
+    <SidePassShadow direction="right" top="52%" trigger="#galeri-bolum" src="/images/jumpscare/garez-yuz.png" />
+    <SidePassShadow direction="left" top="65%" size="lg" trigger="#yorumlar" src="/images/jumpscare/garez-yuz.png" />
+    <HorrorTransition />
+    <JumpscareController />
+
+    <div class="vhs-overlay" aria-hidden="true">
+      <div class="rec-indicator">● REC</div>
+      <div class="vhs-timestamp" id="vhs-timestamp"></div>
+    </div>
+
+    <Header />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      import { setupHorrorBoot } from '@/lib/initHorrorExperience';
+      import { savePreferences } from '@/lib/scare-engine/ExperienceState';
+      import { ensureGestureAudioUnlock, bootstrapSoundExperience } from '@/lib/audio/bootstrapAudio';
+
+      savePreferences({
+        audio: 'sound',
+        gatePassed: true,
+        sessionStarted: true,
+      });
+      ensureGestureAudioUnlock();
+      bootstrapSoundExperience().catch(() => {});
+      setupHorrorBoot();
+    </script>
+  </body>
+</html>
+
+<style>
+  .vhs-overlay {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 40;
+    pointer-events: none;
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: rgba(255,0,0,0.5);
+    opacity: 0.6;
+  }
+  .rec-indicator {
+    animation: recBlink 2s ease infinite;
+  }
+  @keyframes recBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .vhs-timestamp { color: rgba(255,255,255,0.3); margin-top: 0.25rem; }
+  body.reduced-motion-active .rec-indicator { animation: none; }
+</style>

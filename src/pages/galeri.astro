@@ -1,0 +1,43 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SpiderWebs from '@/components/effects/SpiderWebs.astro';
+import GlitchText from '@/components/effects/GlitchText.astro';
+
+const images = [
+  { src: '/images/horror/gallery-1.svg', title: 'Koridor I', desc: 'Garezin duyulduğu kanat' },
+  { src: '/images/horror/gallery-2.svg', title: 'Kapı VII', desc: 'Mühürlü borcun odası' },
+  { src: '/images/horror/gallery-3.svg', title: 'Bodrum', desc: 'Hesabın ödendiği yer' },
+  { src: '/images/horror/gallery-4.svg', title: 'Duvar', desc: 'Silinmeyen isimler' },
+  { src: '/images/horror/gallery-5.svg', title: 'Ayna', desc: 'Yansıma tutarsızlığı' },
+  { src: '/images/horror/gallery-6.svg', title: 'Merdiven', desc: 'Üçüncü kata çıkış' },
+  { src: '/images/horror/corridor-1.svg', title: 'Kayıt 14', desc: 'Güvenlik kamerası' },
+  { src: '/images/horror/corridor-2.svg', title: 'Kayıt 22', desc: 'Hareket algılandı' },
+];
+---
+
+<BaseLayout title="Galeri — Garez Korku Evi">
+  <section class="section" style="padding-top: 3rem;">
+    <SpiderWebs position="top-left" />
+    <SpiderWebs position="top-right" />
+    <h1 class="section__title">
+      <GlitchText text="GAREZ ARŞİVİ" tag="span" />
+    </h1>
+    <p class="section__subtitle">Evin geride bıraktığı görüntüler. Bazıları kasıtlı bozulmuş.</p>
+
+    <div class="gallery__grid" style="margin-top: 2rem;">
+      {images.map((img) => (
+        <figure class="gallery__item reveal-fade">
+          <img src={img.src} alt={img.title} loading="lazy" decoding="async" />
+          <figcaption style="position:absolute;bottom:0;left:0;right:0;padding:0.75rem;background:rgba(0,0,0,0.7);font-size:0.8rem;">
+            <strong style="color:#ccc;">{img.title}</strong>
+            <span style="color:#666;display:block;">{img.desc}</span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+
+    <p style="margin-top: 2rem; text-align: center;">
+      <a href="/" class="hero__cta" data-transition>Ana Sayfaya Dön</a>
+    </p>
+  </section>
+</BaseLayout>

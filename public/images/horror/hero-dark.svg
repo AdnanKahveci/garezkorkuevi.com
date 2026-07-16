@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1020"/>
+      <stop offset="60%" stop-color="#120a0a"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </linearGradient>
+    <radialGradient id="redGlow" cx="75%" cy="45%" r="35%">
+      <stop offset="0%" stop-color="#8b0000" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="fogGlow" cx="30%" cy="60%" r="40%">
+      <stop offset="0%" stop-color="#2a2a3a" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feBlend in="SourceGraphic" mode="multiply"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect width="1200" height="800" fill="url(#fogGlow)"/>
+  <rect width="1200" height="800" fill="url(#redGlow)"/>
+  <!-- Corridor walls -->
+  <rect x="0" y="200" width="280" height="500" fill="#0d0d0d" opacity="0.8"/>
+  <rect x="920" y="200" width="280" height="500" fill="#0d0d0d" opacity="0.8"/>
+  <!-- Floor -->
+  <polygon points="0,700 600,550 1200,700 1200,800 0,800" fill="#111"/>
+  <line x1="0" y1="700" x2="1200" y2="700" stroke="#1a1a1a" stroke-width="1"/>
+  <!-- Door frame center -->
+  <rect x="480" y="180" width="240" height="520" fill="#0a0808" stroke="#3a2020" stroke-width="2"/>
+  <rect x="500" y="200" width="200" height="480" fill="#080606"/>
+  <!-- Red light from door crack -->
+  <rect x="595" y="200" width="10" height="480" fill="#8b0000" opacity="0.4" filter="blur(4px)"/>
+  <ellipse cx="600" cy="440" rx="80" ry="120" fill="#c41e1e" opacity="0.12"/>
+  <!-- Hanging chains -->
+  <line x1="350" y1="0" x2="350" y2="180" stroke="#333" stroke-width="2"/>
+  <line x1="850" y1="0" x2="850" y2="160" stroke="#333" stroke-width="2"/>
+  <!-- Scratch marks -->
+  <line x1="100" y1="300" x2="180" y2="450" stroke="#2a1a1a" stroke-width="1" opacity="0.5"/>
+  <line x1="1050" y1="350" x2="980" y2="500" stroke="#2a1a1a" stroke-width="1" opacity="0.5"/>
+  <!-- Silhouette in distance -->
+  <ellipse cx="600" cy="420" rx="25" ry="60" fill="#000" opacity="0.6"/>
+  <circle cx="600" cy="370" r="18" fill="#000" opacity="0.6"/>
+</svg>

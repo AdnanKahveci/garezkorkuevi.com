@@ -1,0 +1,238 @@
+---
+// ExperienceGate - Sinematik giriş kapısı
+---
+
+<div id="experience-gate" class="experience-gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+  <div class="experience-gate__overlay"></div>
+  <div class="experience-gate__content">
+    <div class="experience-gate__fog" aria-hidden="true"></div>
+    <h1 id="gate-title" class="experience-gate__title">KARANLIĞA GİRMEYE HAZIR MISIN?</h1>
+    <p class="experience-gate__subtitle">
+      Bu deneyim ses, hareketli görüntü ve kontrollü korku efektleri içermektedir.
+    </p>
+    <p class="experience-gate__warning">
+      Bu site hareketli görüntüler, ani sesler ve kontrollü korku efektleri içerebilir.
+      Epilepsi, migren, panik atak veya hareket hassasiyeti bulunan ziyaretçiler
+      sessiz ve azaltılmış hareket modunu tercih edebilir.
+    </p>
+    <div class="experience-gate__actions">
+      <button type="button" class="gate-btn gate-btn--primary" data-choice="sound">
+        Deneyime Başla (Sesli)
+      </button>
+      <button type="button" class="gate-btn gate-btn--secondary" data-choice="silent">
+        Sessiz Devam Et
+      </button>
+      <button type="button" class="gate-btn gate-btn--tertiary" data-choice="reduced">
+        Hareketleri Azalt
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { bootstrapSoundExperience, ensureGestureAudioUnlock } from '@/lib/audio/bootstrapAudio';
+  import { preloadJumpscareAssets } from '@/lib/scare-engine/JumpscareEngine';
+  import { audioManager } from '@/lib/audio/AudioManager';
+  import { getPreferences, savePreferences } from '@/lib/scare-engine/ExperienceState';
+
+  function activateExperience() {
+    document.body.style.overflow = '';
+    document.body.classList.add('experience-active');
+    window.dispatchEvent(new CustomEvent('experience-started'));
+  }
+
+  function dismissGate(gate: HTMLElement) {
+    gate.classList.add('experience-gate--exit');
+    gate.style.pointerEvents = 'none';
+
+    const remove = () => {
+      gate.classList.add('experience-gate--hidden');
+      gate.remove();
+    };
+
+    gate.addEventListener('animationend', remove, { once: true });
+    setTimeout(remove, 800);
+  }
+
+  async function handleChoice(choice: string | null) {
+    let motionPref: 'full' | 'reduced' = 'full';
+
+    if (choice === 'silent') {
+      savePreferences({
+        audio: 'silent',
+        motion: motionPref,
+        gatePassed: true,
+        sessionStarted: true,
+      });
+      audioManager.setMasterEnabled(false);
+    } else {
+      if (choice === 'reduced') {
+        motionPref = 'reduced';
+        document.body.classList.add('reduced-motion-active');
+      }
+      await bootstrapSoundExperience();
+      savePreferences({
+        audio: 'sound',
+        motion: motionPref,
+        gatePassed: true,
+        sessionStarted: true,
+      });
+    }
+
+    sessionStorage.setItem('horror-gate-passed', 'true');
+
+    try {
+      preloadJumpscareAssets();
+    } catch { /* ignore */ }
+
+    activateExperience();
+  }
+
+  function initGate() {
+    const gate = document.getElementById('experience-gate');
+    if (!gate) return;
+
+    const prefs = getPreferences();
+    if (prefs.gatePassed || sessionStorage.getItem('horror-gate-passed') === 'true') {
+      gate.remove();
+      activateExperience();
+      ensureGestureAudioUnlock();
+      if (prefs.motion === 'reduced') {
+        document.body.classList.add('reduced-motion-active');
+      }
+      try { preloadJumpscareAssets(); } catch { /* ignore */ }
+      return;
+    }
+
+    gate.classList.add('experience-gate--visible');
+    document.body.style.overflow = 'hidden';
+
+    gate.querySelectorAll('[data-choice]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const choice = btn.getAttribute('data-choice');
+        btn.setAttribute('disabled', 'true');
+        gate.querySelectorAll('[data-choice]').forEach((b) => b.setAttribute('disabled', 'true'));
+
+        await handleChoice(choice);
+        dismissGate(gate);
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGate);
+  } else {
+    initGate();
+  }
+</script>
+
+<style>
+  .experience-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #0a0a0a;
+  }
+  .experience-gate--visible { display: flex; }
+  .experience-gate--exit {
+    animation: gateExit 0.6s ease forwards;
+  }
+  .experience-gate--hidden {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  @keyframes gateExit {
+    to { opacity: 0; transform: scale(1.03); }
+  }
+  .experience-gate__overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, #000 70%);
+    pointer-events: none;
+  }
+  .experience-gate__content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 2rem;
+    max-width: 600px;
+  }
+  .experience-gate__fog {
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(circle, rgba(40,0,0,0.15) 0%, transparent 60%);
+    animation: gateFog 4s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  @keyframes gateFog {
+    to { transform: translate(20px, -10px) scale(1.1); }
+  }
+  .experience-gate__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    color: #c41e1e;
+    text-shadow: 0 0 20px rgba(196,30,30,0.5);
+    margin-bottom: 1rem;
+    letter-spacing: 0.15em;
+  }
+  .experience-gate__subtitle {
+    color: #999;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+  .experience-gate__warning {
+    color: #666;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border: 1px solid #333;
+    border-radius: 4px;
+  }
+  .experience-gate__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .gate-btn {
+    padding: 0.85rem 2rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    min-width: 260px;
+    font-family: var(--font-body);
+  }
+  .gate-btn:disabled {
+    opacity: 0.5;
+    cursor: wait;
+  }
+  .gate-btn:hover:not(:disabled) { transform: translateY(-2px); }
+  .gate-btn--primary {
+    background: #8b0000;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(139,0,0,0.4);
+  }
+  .gate-btn--secondary {
+    background: #222;
+    color: #ccc;
+    border: 1px solid #444;
+  }
+  .gate-btn--tertiary {
+    background: transparent;
+    color: #888;
+    border: 1px solid #333;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .experience-gate__fog { animation: none; }
+    .experience-gate--exit { animation: gateExitReduced 0.3s ease forwards; }
+    @keyframes gateExitReduced { to { opacity: 0; } }
+  }
+</style>

@@ -1,0 +1,126 @@
+---
+// FogLayers - Katmanlı sis efekti
+interface Props {
+  intensity?: number;
+}
+const { intensity = 0.6 } = Astro.props;
+---
+
+<div class="fog-system" data-intensity={intensity} style={`--fog-intensity: ${intensity}`} aria-hidden="true">
+  <div class="fog-layer fog-layer--back"></div>
+  <div class="fog-layer fog-layer--mid"></div>
+  <div class="fog-layer fog-layer--front"></div>
+  <canvas class="fog-particles" id="fog-particles"></canvas>
+</div>
+
+<script>
+  import { isMobile, isReducedMotion, getEffectiveFearLevel } from '@/lib/scare-engine/ExperienceState';
+  import { getFearConfig } from '@/lib/scare-engine/FearLevel';
+  import { isPageVisible, onAnimationFrame } from '@/lib/animation/performance';
+
+  function initFog() {
+    if (isReducedMotion()) return;
+
+    const canvas = document.getElementById('fog-particles') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const config = getFearConfig(getEffectiveFearLevel());
+    const isMob = isMobile();
+    const particleCount = Math.floor((isMob ? 15 : 40) * config.fogIntensity);
+
+    let width = 0;
+    let height = 0;
+    const particles: { x: number; y: number; r: number; speed: number; opacity: number }[] = [];
+
+    function resize() {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      width = parent.clientWidth;
+      height = parent.clientHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    function initParticles() {
+      particles.length = 0;
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          r: Math.random() * 3 + 1,
+          speed: Math.random() * 0.3 + 0.1,
+          opacity: Math.random() * 0.3 + 0.1,
+        });
+      }
+    }
+
+    resize();
+    initParticles();
+    window.addEventListener('resize', () => { resize(); initParticles(); });
+
+    const cleanup = onAnimationFrame(() => {
+      if (!isPageVisible()) return;
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach((p) => {
+        p.x += p.speed;
+        if (p.x > width) p.x = -10;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(180,180,200,${p.opacity})`;
+        ctx.fill();
+      });
+    });
+
+    window.addEventListener('beforeunload', cleanup);
+  }
+
+  initFog();
+</script>
+
+<style>
+  .fog-system {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .fog-layer {
+    position: absolute;
+    inset: -20%;
+    opacity: calc(0.1 * var(--fog-intensity, 0.6));
+  }
+  .fog-layer--back {
+    background: radial-gradient(ellipse at 30% 50%, rgba(80,0,0,0.2) 0%, transparent 60%);
+    animation: fogDriftSlow 20s ease-in-out infinite alternate;
+  }
+  .fog-layer--mid {
+    background: radial-gradient(ellipse at 70% 40%, rgba(100,0,0,0.15) 0%, transparent 50%);
+    animation: fogDriftMid 12s ease-in-out infinite alternate;
+    opacity: calc(0.14 * var(--fog-intensity, 0.6));
+  }
+  .fog-layer--front {
+    background: radial-gradient(ellipse at 50% 80%, rgba(60,0,0,0.12) 0%, transparent 40%);
+    animation: fogDriftFront 8s ease-in-out infinite alternate;
+    opacity: calc(0.08 * var(--fog-intensity, 0.6));
+  }
+  .fog-particles {
+    display: none;
+  }
+  @keyframes fogDriftSlow {
+    to { transform: translate(30px, -15px); }
+  }
+  @keyframes fogDriftMid {
+    to { transform: translate(-25px, 20px); }
+  }
+  @keyframes fogDriftFront {
+    to { transform: translate(15px, -10px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fog-layer { animation: none; }
+    .fog-particles { display: none; }
+  }
+</style>

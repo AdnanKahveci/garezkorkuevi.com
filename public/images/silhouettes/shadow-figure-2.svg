@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 130">
+  <defs>
+    <filter id="glow2">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#8b0000" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+  <g fill="#4a4a4a" filter="url(#glow2)">
+    <ellipse cx="45" cy="28" rx="18" ry="22"/>
+    <path d="M25,55 Q45,48 65,55 L60,100 Q45,108 30,100 Z"/>
+    <line x1="20" y1="58" x2="5" y2="95" stroke="#4a4a4a" stroke-width="5" stroke-linecap="round"/>
+    <line x1="70" y1="58" x2="85" y2="90" stroke="#4a4a4a" stroke-width="5" stroke-linecap="round"/>
+    <line x1="35" y1="100" x2="28" y2="128" stroke="#4a4a4a" stroke-width="5" stroke-linecap="round"/>
+    <line x1="55" y1="100" x2="62" y2="128" stroke="#4a4a4a" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <circle cx="38" cy="24" r="2.5" fill="#ff2222"/>
+  <circle cx="52" cy="24" r="2.5" fill="#ff2222"/>
+</svg>
