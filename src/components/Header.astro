@@ -1,100 +1,100 @@
 ---
 import AudioController from './effects/AudioController.astro';
-import GlitchText from './effects/GlitchText.astro';
 
 const navItems = [
-  { href: '/#anasayfa', label: 'Ana Sayfa' },
+  { href: '/#deneyim', label: 'Deneyim' },
   { href: '/#hikaye', label: 'Hikâye' },
   { href: '/#oyun', label: 'Oyun' },
   { href: '/#galeri-bolum', label: 'Galeri' },
-  { href: '/#rezervasyon', label: 'Rezervasyon' },
+  { href: '/#sss', label: 'S.S.S.' },
 ];
 ---
 
-<header class="site-header" data-safe-zone="header">
+<header class="site-header" id="site-header" data-safe-zone="header">
   <div class="site-header__inner">
-    <a href="/#anasayfa" class="site-header__logo" data-nav-section>
-      <GlitchText text="GAREZ" tag="span" class="site-header__logo-text" />
+    <a href="/#anasayfa" class="site-header__logo" data-nav-section aria-label="G Garez Korku Evi — ana sayfa">
+      <span class="site-header__mark" aria-hidden="true">G</span>
+      <span class="site-header__brand">GAREZ <small>KORKU EVİ</small></span>
     </a>
 
     <nav class="site-nav" id="site-nav" aria-label="Ana navigasyon" data-safe-zone="nav">
       <ul class="site-nav__list">
         {navItems.map((item) => (
-          <li>
-            <a href={item.href} class="site-nav__link" data-nav-section>{item.label}</a>
-          </li>
+          <li><a href={item.href} class="site-nav__link" data-nav-section>{item.label}</a></li>
         ))}
       </ul>
     </nav>
 
     <div class="site-header__controls">
       <AudioController />
-      <button type="button" class="site-header__menu-btn" id="menu-toggle" aria-label="Menüyü aç" aria-expanded="false">
-        <span></span><span></span><span></span>
+      <a href="/#rezervasyon" class="site-header__booking" data-nav-section>RANDEVU <span aria-hidden="true">↗</span></a>
+      <button type="button" class="site-header__menu-btn" id="menu-toggle" aria-label="Menüyü aç" aria-controls="site-nav" aria-expanded="false">
+        <span></span><span></span>
       </button>
     </div>
   </div>
 </header>
 
 <script>
-  import { setMenuOpen } from '@/lib/scare-engine/JumpscareEngine';
-
-  function closeMobileNav() {
-    const toggle = document.getElementById('menu-toggle');
-    const nav = document.getElementById('site-nav');
-    if (!toggle || !nav) return;
-    nav.classList.remove('site-nav--open');
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Menüyü aç');
-    setMenuOpen(false);
+  function notifyMenuState(open: boolean) {
+    window.dispatchEvent(new CustomEvent('horror-menu-state', { detail: { open } }));
   }
 
   function scrollToHash(hash: string) {
     const id = hash.replace(/^#/, '');
-    if (!id || id === 'anasayfa') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const element = id === 'anasayfa' ? document.getElementById('anasayfa') : document.getElementById(id);
+    if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function initHeader() {
+    const header = document.getElementById('site-header');
     const toggle = document.getElementById('menu-toggle');
     const nav = document.getElementById('site-nav');
-    if (!toggle || !nav) return;
+    if (!header || !toggle || !nav) return;
+
+    const closeNav = () => {
+      nav.classList.remove('site-nav--open');
+      toggle.classList.remove('site-header__menu-btn--open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Menüyü aç');
+      notifyMenuState(false);
+    };
 
     toggle.addEventListener('click', () => {
       const open = nav.classList.toggle('site-nav--open');
+      toggle.classList.toggle('site-header__menu-btn--open', open);
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? 'Menüyü kapat' : 'Menüyü aç');
-      setMenuOpen(open);
+      notifyMenuState(open);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeNav();
     });
 
     document.querySelectorAll<HTMLAnchorElement>('a[data-nav-section]').forEach((link) => {
-      link.addEventListener('click', (e) => {
+      link.addEventListener('click', (event) => {
         const href = link.getAttribute('href');
         if (!href) return;
 
         const url = new URL(href, window.location.href);
-        const samePage = url.pathname === window.location.pathname || (url.pathname === '/' && window.location.pathname === '/');
-
+        const samePage = url.pathname.replace(/\/$/, '') === window.location.pathname.replace(/\/$/, '');
         if (samePage && url.hash) {
-          e.preventDefault();
-          closeMobileNav();
+          event.preventDefault();
+          closeNav();
           history.pushState(null, '', url.hash);
           scrollToHash(url.hash);
-        } else if (url.hash && url.pathname === '/') {
-          // Galeri vb. başka sayfadan ana sayfa bölümüne git
-          closeMobileNav();
+        } else {
+          closeNav();
         }
       });
     });
 
-    // Sayfa /#bolum ile açıldıysa ilgili başlığa kaydır
-    if (window.location.hash) {
-      requestAnimationFrame(() => scrollToHash(window.location.hash));
-    }
+    const updateHeader = () => header.classList.toggle('site-header--scrolled', window.scrollY > 24);
+    updateHeader();
+    window.addEventListener('scroll', updateHeader, { passive: true });
+
+    if (window.location.hash) requestAnimationFrame(() => scrollToHash(window.location.hash));
   }
 
   initHeader();
@@ -103,78 +103,60 @@ const navItems = [
 <style>
   .site-header {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    inset: 0 0 auto;
     z-index: 100;
-    background: rgba(18, 8, 8, 0.95);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(196,30,30,0.2);
+    height: var(--header-height);
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    background: linear-gradient(180deg, rgba(7,6,6,.92), rgba(7,6,6,.62));
+    backdrop-filter: blur(16px) saturate(1.2);
+    transition: background .25s ease, border-color .25s ease;
   }
+
+  .site-header--scrolled { background: rgba(8,7,7,.95); border-color: rgba(185,35,29,.22); }
+
   .site-header__inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0.75rem 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    width: min(100% - 2rem, 1320px);
+    height: 100%;
+    margin: 0 auto;
+    gap: 1.25rem;
   }
-  .site-header__logo {
-    text-decoration: none;
-    font-family: var(--font-display);
-    font-size: 1.2rem;
-    color: #e02020;
-    letter-spacing: 0.2em;
+
+  .site-header__logo { display: flex; align-items: center; gap: .65rem; flex: 0 0 auto; text-decoration: none; }
+  .site-header__mark { display: grid; place-items: center; width: 31px; height: 31px; border: 1px solid #9e201b; color: #de352d; font: 700 1rem var(--font-display); }
+  .site-header__brand { color: #eee7e0; font: 700 .74rem/1 var(--font-display); letter-spacing: .18em; }
+  .site-header__brand small { display: block; margin-top: .28rem; color: #716c68; font: 600 .43rem/1 var(--font-body); letter-spacing: .24em; }
+
+  .site-nav__list { display: flex; align-items: center; gap: clamp(1rem, 2.2vw, 2rem); list-style: none; }
+  .site-nav__link { position: relative; padding: .5rem 0; color: #9b9590; text-decoration: none; font-size: .66rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; transition: color .2s ease; }
+  .site-nav__link::after { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: #c52b24; transform: scaleX(0); transform-origin: right; transition: transform .25s ease; }
+  .site-nav__link:hover, .site-nav__link:focus-visible { color: #fff; }
+  .site-nav__link:hover::after, .site-nav__link:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+
+  .site-header__controls { display: flex; align-items: center; gap: .6rem; flex: 0 0 auto; }
+  .site-header__booking { display: inline-flex; align-items: center; gap: .5rem; min-height: 36px; padding: 0 .9rem; border: 1px solid #9e241f; color: #f4ede7; background: rgba(139,15,12,.2); text-decoration: none; font-size: .58rem; font-weight: 700; letter-spacing: .13em; }
+  .site-header__booking:hover { background: #961c17; }
+
+  .site-header__menu-btn { display: none; position: relative; width: 38px; height: 36px; border: 1px solid rgba(255,255,255,.13); background: rgba(255,255,255,.04); cursor: pointer; }
+  .site-header__menu-btn span { position: absolute; left: 10px; width: 16px; height: 1px; background: #d4cec8; transition: transform .25s ease, top .25s ease; }
+  .site-header__menu-btn span:first-child { top: 13px; }
+  .site-header__menu-btn span:last-child { top: 21px; }
+  .site-header__menu-btn--open span:first-child { top: 17px; transform: rotate(45deg); }
+  .site-header__menu-btn--open span:last-child { top: 17px; transform: rotate(-45deg); }
+
+  @media (max-width: 980px) {
+    .site-header__booking { display: none; }
+    .site-header__menu-btn { display: block; }
+    .site-nav { position: fixed; inset: var(--header-height) 0 auto; padding: 1.25rem 1rem 1.5rem; border-bottom: 1px solid rgba(185,35,29,.24); background: rgba(8,7,7,.98); transform: translateY(-120%); opacity: 0; visibility: hidden; transition: transform .3s ease, opacity .25s ease, visibility .3s; }
+    .site-nav--open { transform: translateY(0); opacity: 1; visibility: visible; }
+    .site-nav__list { width: min(100%, 1320px); margin: 0 auto; flex-direction: column; align-items: stretch; gap: 0; }
+    .site-nav__link { display: flex; align-items: center; min-height: 48px; border-bottom: 1px solid rgba(255,255,255,.07); font-size: .78rem; }
   }
-  .site-nav__list {
-    display: flex;
-    gap: 1.5rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .site-nav__link {
-    color: #aaa;
-    text-decoration: none;
-    font-size: 0.85rem;
-    letter-spacing: 0.05em;
-    transition: color 0.2s;
-  }
-  .site-nav__link:hover { color: #fff; }
-  .site-header__controls {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .site-header__menu-btn {
-    display: none;
-    flex-direction: column;
-    gap: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-  }
-  .site-header__menu-btn span {
-    display: block;
-    width: 22px;
-    height: 2px;
-    background: #ccc;
-  }
-  @media (max-width: 768px) {
-    .site-nav {
-      position: fixed;
-      top: 56px;
-      left: 0;
-      right: 0;
-      background: rgba(10,10,10,0.95);
-      padding: 1rem;
-      transform: translateY(-120%);
-      transition: transform 0.3s;
-    }
-    .site-nav--open { transform: translateY(0); }
-    .site-nav__list { flex-direction: column; gap: 0.75rem; }
-    .site-header__menu-btn { display: flex; }
+
+  @media (max-width: 420px) {
+    .site-header__inner { width: min(100% - 1rem, 1320px); }
+    .site-header__brand small { display: none; }
   }
 </style>

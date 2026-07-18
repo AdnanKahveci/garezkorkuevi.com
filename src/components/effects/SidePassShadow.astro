@@ -23,10 +23,10 @@ const faceSrc = src || '/images/jumpscare/garez-yuz.png';
   aria-hidden="true"
 >
   <img
-    src={faceSrc}
+    data-horror-src={faceSrc}
     alt=""
     class="side-shadow__img"
-    loading="eager"
+    loading="lazy"
     decoding="async"
   />
 </div>
@@ -55,11 +55,7 @@ const faceSrc = src || '/images/jumpscare/garez-yuz.png';
   }
 
   @media (max-width: 768px) {
-    .side-shadow--lg { display: none; }
-    .side-shadow__img {
-      filter: drop-shadow(0 0 14px rgba(160, 0, 0, 0.7)) contrast(1.15);
-      opacity: 0.95;
-    }
+    .side-shadow { display: none !important; }
   }
 
   body.reduced-motion-active .side-shadow {

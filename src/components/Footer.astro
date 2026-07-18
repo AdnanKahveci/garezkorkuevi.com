@@ -1,40 +1,78 @@
 ---
-// Footer
+import { WHATSAPP_URL } from '@/config/contact';
+import { BUSINESS, SITE } from '@/config/site';
+
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-  <div class="site-footer__inner">
-    <p class="site-footer__copy">&copy; {year} Garez Korku Evi. Tüm hakları saklıdır.</p>
-    <nav class="site-footer__nav" aria-label="Alt navigasyon">
-      <a href="/#anasayfa" data-nav-section>Ana Sayfa</a>
-      <a href="/#galeri-bolum" data-nav-section>Galeri</a>
-      <a href="/#rezervasyon" data-nav-section>Rezervasyon</a>
-    </nav>
+  <div class="site-footer__top">
+    <div class="site-footer__brand">
+      <span aria-hidden="true">G</span>
+      <div>
+        <p>{SITE.name}</p>
+        <small>CANLI AKTÖRLÜ KORKU DENEYİMİ</small>
+      </div>
+    </div>
+    <p class="site-footer__manifesto">Bazı hikâyeler anlatılmaz.<br /><em>İçinde yaşanır.</em></p>
+  </div>
+
+  <div class="site-footer__grid">
+    <div>
+      <p class="site-footer__label">KEŞFET</p>
+      <nav class="site-footer__nav" aria-label="Alt navigasyon">
+        <a href="/#deneyim">Deneyim</a>
+        <a href="/#hikaye">Hikâye</a>
+        <a href="/#oyun">Oyun</a>
+        <a href="/galeri/">Galeri</a>
+        <a href="/#sss">Sık Sorulanlar</a>
+      </nav>
+    </div>
+    <div>
+      <p class="site-footer__label">İLETİŞİM</p>
+      <div class="site-footer__nav">
+        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        {BUSINESS.detailsVerified && BUSINESS.email && <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>}
+        {BUSINESS.detailsVerified && BUSINESS.city && <span>{BUSINESS.city}</span>}
+      </div>
+    </div>
+    <div class="site-footer__reserve">
+      <p class="site-footer__label">CESARETİN VAR MI?</p>
+      <a href="/#rezervasyon">RANDEVU OLUŞTUR <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+
+  <div class="site-footer__bottom">
+    <p>&copy; {year} {SITE.name}. Tüm hakları saklıdır.</p>
+    <p>Korku evi deneyimi; ani ses, ışık ve hareketli efektler içerebilir.</p>
   </div>
 </footer>
 
 <style>
-  .site-footer {
-    background: #0a0a0a;
-    border-top: 1px solid rgba(255,255,255,0.05);
-    padding: 2rem 1.5rem;
+  .site-footer { position: relative; z-index: 20; padding: clamp(3rem, 7vw, 6rem) max(1rem, calc((100vw - 1280px) / 2)); background: #070606; border-top: 1px solid rgba(255,255,255,.08); }
+  .site-footer__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .site-footer__brand { display: flex; align-items: center; gap: .8rem; }
+  .site-footer__brand > span { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid #96201b; color: #dc342d; font: 700 1.25rem var(--font-display); }
+  .site-footer__brand p { color: #eee8e2; font: 700 .83rem var(--font-display); letter-spacing: .15em; }
+  .site-footer__brand small { display: block; margin-top: .3rem; color: #958e88; font-size: .48rem; letter-spacing: .17em; }
+  .site-footer__manifesto { color: #9b948e; font: 500 clamp(1.15rem, 2.4vw, 1.7rem)/1.35 var(--font-display); text-align: right; }
+  .site-footer__manifesto em { color: #e44a42; font-style: normal; }
+  .site-footer__grid { display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: 3rem; padding: 3rem 0; }
+  .site-footer__label { margin-bottom: 1rem; color: #958e88; font-size: .56rem; font-weight: 700; letter-spacing: .18em; }
+  .site-footer__nav { display: grid; gap: .55rem; }
+  .site-footer__nav a, .site-footer__nav span { width: max-content; color: #aaa39d; text-decoration: none; font-size: .75rem; }
+  .site-footer__nav a:hover { color: #fff; }
+  .site-footer__reserve { justify-self: end; text-align: right; }
+  .site-footer__reserve a { display: inline-flex; align-items: center; gap: .7rem; padding: 1rem 1.25rem; border: 1px solid #93211c; color: #f1eae4; background: rgba(130,15,12,.14); text-decoration: none; font-size: .65rem; font-weight: 700; letter-spacing: .11em; }
+  .site-footer__reserve a:hover { background: #8f1915; }
+  .site-footer__bottom { display: flex; justify-content: space-between; gap: 2rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,.07); color: #8d8782; font-size: .59rem; }
+
+  @media (max-width: 700px) {
+    .site-footer { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+    .site-footer__top { flex-direction: column; }
+    .site-footer__manifesto { text-align: left; }
+    .site-footer__grid { grid-template-columns: 1fr 1fr; }
+    .site-footer__reserve { grid-column: span 2; justify-self: start; text-align: left; }
+    .site-footer__bottom { flex-direction: column; gap: .45rem; }
   }
-  .site-footer__inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .site-footer__copy { color: #555; font-size: 0.8rem; }
-  .site-footer__nav { display: flex; gap: 1.5rem; }
-  .site-footer__nav a {
-    color: #666;
-    text-decoration: none;
-    font-size: 0.8rem;
-  }
-  .site-footer__nav a:hover { color: #aaa; }
 </style>

@@ -1,43 +1,63 @@
 ---
-// ExperienceGate - Sinematik giriş kapısı
+// Tarayıcılar kullanıcı etkileşimi olmadan ses başlatamaz; bu kapı açık izin sağlar.
 ---
 
-<div id="experience-gate" class="experience-gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
-  <div class="experience-gate__overlay"></div>
+<div id="experience-gate" class="experience-gate" role="dialog" aria-modal="true" aria-labelledby="gate-title" aria-describedby="gate-description">
+  <div class="experience-gate__image" aria-hidden="true"></div>
+  <div class="experience-gate__noise" aria-hidden="true"></div>
+
   <div class="experience-gate__content">
-    <div class="experience-gate__fog" aria-hidden="true"></div>
-    <h1 id="gate-title" class="experience-gate__title">KARANLIĞA GİRMEYE HAZIR MISIN?</h1>
-    <p class="experience-gate__subtitle">
-      Bu deneyim ses, hareketli görüntü ve kontrollü korku efektleri içermektedir.
+    <div class="experience-gate__brand" aria-hidden="true">
+      <span>G</span>
+      <p>GAREZ<br />KORKU EVİ</p>
+    </div>
+    <p class="experience-gate__eyebrow">ETKİLEŞİMLİ KORKU DENEYİMİ</p>
+    <h2 id="gate-title" class="experience-gate__title">Karanlık<br /><em>sesle başlar.</em></h2>
+    <p id="gate-description" class="experience-gate__subtitle">
+      Atmosfer ve ani efektler sesle birlikte tasarlandı. Kontrol her zaman sende.
     </p>
-    <p class="experience-gate__warning">
-      Bu site hareketli görüntüler, ani sesler ve kontrollü korku efektleri içerebilir.
-      Epilepsi, migren, panik atak veya hareket hassasiyeti bulunan ziyaretçiler
-      sessiz ve azaltılmış hareket modunu tercih edebilir.
-    </p>
+
     <div class="experience-gate__actions">
       <button type="button" class="gate-btn gate-btn--primary" data-choice="sound">
-        Deneyime Başla (Sesli)
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm11 7.5v-9a5 5 0 0 1 0 9zm0-13v2.06a7 7 0 0 1 0 12.88v2.06A9 9 0 0 0 14 3.5z"/></svg>
+        <span>Sesli deneyime gir <small>ÖNERİLEN</small></span>
       </button>
       <button type="button" class="gate-btn gate-btn--secondary" data-choice="silent">
-        Sessiz Devam Et
-      </button>
-      <button type="button" class="gate-btn gate-btn--tertiary" data-choice="reduced">
-        Hareketleri Azalt
+        Sessiz incele
       </button>
     </div>
+
+    <label class="experience-gate__motion">
+      <input type="checkbox" id="gate-reduced-motion" />
+      <span>Animasyonları ve ani efektleri azalt</span>
+    </label>
+
+    <p class="experience-gate__status" id="gate-status" role="status" aria-live="polite"></p>
+
+    <details class="experience-gate__warning">
+      <summary>Hassasiyet uyarısı</summary>
+      <p>Bu deneyim ani ses, ışık değişimi ve kontrollü korku efektleri içerir. Epilepsi, migren veya panik atak hassasiyetiniz varsa sessiz ve azaltılmış hareket seçeneğini kullanın.</p>
+    </details>
   </div>
+
+  <p class="experience-gate__foot" aria-hidden="true">KULAKLIKLA DAHA ETKİLİDİR</p>
 </div>
 
 <script>
   import { bootstrapSoundExperience, ensureGestureAudioUnlock } from '@/lib/audio/bootstrapAudio';
-  import { preloadJumpscareAssets } from '@/lib/scare-engine/JumpscareEngine';
   import { audioManager } from '@/lib/audio/AudioManager';
   import { getPreferences, savePreferences } from '@/lib/scare-engine/ExperienceState';
 
+  function preloadJumpscareAssets() {
+    document.querySelectorAll<HTMLImageElement>('img[data-horror-src]').forEach((image) => {
+      const source = image.dataset.horrorSrc;
+      if (source && !image.getAttribute('src')) image.src = source;
+    });
+  }
+
   function activateExperience() {
     document.body.style.overflow = '';
-    document.body.classList.add('experience-active');
+    document.body.classList.add('experience-active', 'horror-live');
     window.dispatchEvent(new CustomEvent('experience-started'));
   }
 
@@ -45,47 +65,42 @@
     gate.classList.add('experience-gate--exit');
     gate.style.pointerEvents = 'none';
 
-    const remove = () => {
-      gate.classList.add('experience-gate--hidden');
-      gate.remove();
-    };
-
+    const remove = () => gate.remove();
     gate.addEventListener('animationend', remove, { once: true });
-    setTimeout(remove, 800);
+    window.setTimeout(remove, 650);
   }
 
-  async function handleChoice(choice: string | null) {
-    let motionPref: 'full' | 'reduced' = 'full';
+  async function handleChoice(gate: HTMLElement, choice: 'sound' | 'silent') {
+    const status = document.getElementById('gate-status');
+    const reduceMotion = (document.getElementById('gate-reduced-motion') as HTMLInputElement | null)?.checked ?? false;
+    const motion = reduceMotion ? 'reduced' : 'full';
 
-    if (choice === 'silent') {
-      savePreferences({
-        audio: 'silent',
-        motion: motionPref,
-        gatePassed: true,
-        sessionStarted: true,
-      });
-      audioManager.setMasterEnabled(false);
-    } else {
-      if (choice === 'reduced') {
-        motionPref = 'reduced';
-        document.body.classList.add('reduced-motion-active');
+    if (reduceMotion) document.body.classList.add('reduced-motion-active');
+
+    if (choice === 'sound') {
+      if (status) status.textContent = 'Ses ortamı hazırlanıyor…';
+      const started = await bootstrapSoundExperience();
+      if (!started) {
+        if (status) status.textContent = 'Tarayıcı sesi başlatamadı. Tekrar deneyin veya sessiz devam edin.';
+        gate.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach((button) => { button.disabled = false; });
+        return;
       }
-      await bootstrapSoundExperience();
-      savePreferences({
-        audio: 'sound',
-        motion: motionPref,
-        gatePassed: true,
-        sessionStarted: true,
-      });
+    } else {
+      audioManager.setMasterEnabled(false);
     }
 
-    sessionStorage.setItem('horror-gate-passed', 'true');
+    savePreferences({
+      audio: choice,
+      motion,
+      fearLevel: reduceMotion ? 'light' : 'normal',
+      jumpscareEnabled: !reduceMotion,
+      gatePassed: true,
+      sessionStarted: true,
+    });
 
-    try {
-      preloadJumpscareAssets();
-    } catch { /* ignore */ }
-
+    try { preloadJumpscareAssets(); } catch { /* Görsel ön yüklemesi kritik değil. */ }
     activateExperience();
+    dismissGate(gate);
   }
 
   function initGate() {
@@ -93,37 +108,30 @@
     if (!gate) return;
 
     const prefs = getPreferences();
-    if (prefs.gatePassed || sessionStorage.getItem('horror-gate-passed') === 'true') {
+    if (prefs.gatePassed) {
       gate.remove();
-      activateExperience();
-      ensureGestureAudioUnlock();
-      if (prefs.motion === 'reduced') {
-        document.body.classList.add('reduced-motion-active');
-      }
+      if (prefs.motion === 'reduced') document.body.classList.add('reduced-motion-active');
+      if (prefs.audio === 'sound') ensureGestureAudioUnlock();
+      else audioManager.setMasterEnabled(false);
       try { preloadJumpscareAssets(); } catch { /* ignore */ }
+      activateExperience();
       return;
     }
 
-    gate.classList.add('experience-gate--visible');
     document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => gate.classList.add('experience-gate--visible'));
+    (gate.querySelector('[data-choice="sound"]') as HTMLButtonElement | null)?.focus();
 
-    gate.querySelectorAll('[data-choice]').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        const choice = btn.getAttribute('data-choice');
-        btn.setAttribute('disabled', 'true');
-        gate.querySelectorAll('[data-choice]').forEach((b) => b.setAttribute('disabled', 'true'));
-
-        await handleChoice(choice);
-        dismissGate(gate);
+    gate.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        gate.querySelectorAll<HTMLButtonElement>('[data-choice]').forEach((item) => { item.disabled = true; });
+        await handleChoice(gate, button.dataset.choice as 'sound' | 'silent');
       });
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGate);
-  } else {
-    initGate();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initGate, { once: true });
+  else initGate();
 </script>
 
 <style>
@@ -132,107 +140,187 @@
     inset: 0;
     z-index: 10000;
     display: none;
-    align-items: center;
-    justify-content: center;
-    background: #0a0a0a;
+    place-items: center;
+    min-height: 100dvh;
+    overflow: auto;
+    padding: clamp(1.25rem, 4vw, 3rem);
+    background: #050505;
+    opacity: 0;
   }
-  .experience-gate--visible { display: flex; }
-  .experience-gate--exit {
-    animation: gateExit 0.6s ease forwards;
-  }
-  .experience-gate--hidden {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
+
+  :global(.js) .experience-gate { display: grid; }
+  .experience-gate--visible { opacity: 1; }
+  .experience-gate--exit { animation: gateExit .55s cubic-bezier(.7,0,.3,1) forwards; }
+
   @keyframes gateExit {
-    to { opacity: 0; transform: scale(1.03); }
+    to { opacity: 0; filter: blur(7px); transform: scale(1.02); }
   }
-  .experience-gate__overlay {
+
+  .experience-gate__image {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, transparent 0%, #000 70%);
-    pointer-events: none;
+    background:
+      linear-gradient(90deg, rgba(3,3,3,.78), rgba(3,3,3,.42) 52%, rgba(3,3,3,.76)),
+      linear-gradient(0deg, #050505 0%, transparent 38%),
+      url('/images/horror/garez-hero-v2.webp') center / cover no-repeat;
+    filter: saturate(.55) contrast(1.08) brightness(.6);
   }
+
+  .experience-gate__noise {
+    position: absolute;
+    inset: 0;
+    opacity: .08;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  }
+
   .experience-gate__content {
     position: relative;
-    z-index: 1;
-    text-align: center;
-    padding: 2rem;
-    max-width: 600px;
+    width: min(100%, 590px);
+    padding: clamp(1.5rem, 5vw, 3rem);
+    border: 1px solid rgba(255,255,255,.12);
+    background: linear-gradient(145deg, rgba(11,10,10,.9), rgba(8,7,7,.76));
+    box-shadow: 0 30px 100px rgba(0,0,0,.72), inset 0 1px rgba(255,255,255,.04);
+    backdrop-filter: blur(18px);
   }
-  .experience-gate__fog {
+
+  .experience-gate__content::before {
+    content: '';
     position: absolute;
-    inset: -50%;
-    background: radial-gradient(circle, rgba(40,0,0,0.15) 0%, transparent 60%);
-    animation: gateFog 4s ease-in-out infinite alternate;
+    inset: 10px;
+    border: 1px solid rgba(160,20,20,.18);
     pointer-events: none;
   }
-  @keyframes gateFog {
-    to { transform: translate(20px, -10px) scale(1.1); }
-  }
-  .experience-gate__title {
-    font-family: var(--font-display);
-    font-size: clamp(1.5rem, 5vw, 2.5rem);
-    color: #c41e1e;
-    text-shadow: 0 0 20px rgba(196,30,30,0.5);
-    margin-bottom: 1rem;
-    letter-spacing: 0.15em;
-  }
-  .experience-gate__subtitle {
-    color: #999;
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
-  }
-  .experience-gate__warning {
-    color: #666;
-    font-size: 0.8rem;
-    line-height: 1.5;
-    margin-bottom: 2rem;
-    padding: 1rem;
-    border: 1px solid #333;
-    border-radius: 4px;
-  }
-  .experience-gate__actions {
+
+  .experience-gate__brand {
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
     align-items: center;
+    gap: .75rem;
+    margin-bottom: 2.5rem;
   }
+
+  .experience-gate__brand > span {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid #982323;
+    color: #e93f35;
+    font: 700 1.2rem/1 var(--font-display);
+  }
+
+  .experience-gate__brand p {
+    color: #bcb5ae;
+    font: 600 .58rem/1.35 var(--font-display);
+    letter-spacing: .22em;
+  }
+
+  .experience-gate__eyebrow {
+    color: #d34038;
+    font-size: .63rem;
+    font-weight: 700;
+    letter-spacing: .27em;
+    margin-bottom: .8rem;
+  }
+
+  .experience-gate__title {
+    color: #f6f1ea;
+    font: 600 clamp(2.1rem, 7vw, 4.25rem)/.98 var(--font-display);
+    letter-spacing: -.035em;
+    text-wrap: balance;
+  }
+
+  .experience-gate__title em { color: #ba2923; font-style: normal; }
+
+  .experience-gate__subtitle {
+    max-width: 470px;
+    margin: 1.4rem 0 1.8rem;
+    color: #b3aba4;
+    font-size: .93rem;
+    line-height: 1.65;
+  }
+
+  .experience-gate__actions { display: flex; gap: .65rem; flex-wrap: wrap; }
+
   .gate-btn {
-    padding: 0.85rem 2rem;
-    border: none;
-    border-radius: 4px;
-    font-size: 0.95rem;
+    min-height: 52px;
+    padding: .8rem 1.25rem;
+    border: 1px solid transparent;
+    font: 700 .75rem/1 var(--font-body);
+    letter-spacing: .06em;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    min-width: 260px;
-    font-family: var(--font-body);
+    transition: transform .2s ease, border-color .2s ease, background .2s ease;
   }
-  .gate-btn:disabled {
-    opacity: 0.5;
-    cursor: wait;
-  }
+
+  .gate-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
   .gate-btn:hover:not(:disabled) { transform: translateY(-2px); }
+  .gate-btn:disabled { cursor: wait; opacity: .55; }
+
   .gate-btn--primary {
-    background: #8b0000;
+    flex: 1 1 285px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .65rem;
     color: #fff;
-    box-shadow: 0 0 15px rgba(139,0,0,0.4);
+    background: linear-gradient(135deg, #b51e18, #71110f);
+    border-color: #d83c33;
+    box-shadow: 0 14px 35px rgba(139,0,0,.32);
   }
+
+  .gate-btn--primary span { display: flex; align-items: center; gap: .55rem; }
+  .gate-btn--primary small { font-size: .5rem; padding: .25rem .36rem; border: 1px solid rgba(255,255,255,.38); }
+
   .gate-btn--secondary {
-    background: #222;
-    color: #ccc;
-    border: 1px solid #444;
+    flex: 1 1 135px;
+    color: #c7c0ba;
+    background: rgba(255,255,255,.04);
+    border-color: rgba(255,255,255,.15);
   }
-  .gate-btn--tertiary {
-    background: transparent;
-    color: #888;
-    border: 1px solid #333;
+
+  .experience-gate__motion {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    margin-top: 1rem;
+    color: #958d87;
+    font-size: .72rem;
+    cursor: pointer;
   }
+
+  .experience-gate__motion input { accent-color: #a91d19; }
+  .experience-gate__status { min-height: 1.2rem; margin-top: .6rem; color: #d4a39f; font-size: .72rem; }
+
+  .experience-gate__warning {
+    margin-top: 1.2rem;
+    padding-top: .85rem;
+    border-top: 1px solid rgba(255,255,255,.08);
+    color: #756f6a;
+    font-size: .67rem;
+  }
+
+  .experience-gate__warning summary { width: max-content; cursor: pointer; color: #8f8882; }
+  .experience-gate__warning p { margin-top: .55rem; line-height: 1.55; }
+
+  .experience-gate__foot {
+    position: absolute;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    color: rgba(255,255,255,.28);
+    font-size: .55rem;
+    letter-spacing: .28em;
+  }
+
+  @media (max-width: 540px) {
+    .experience-gate { align-items: start; padding: .75rem; }
+    .experience-gate__content { width: calc(100vw - 1.5rem); max-width: none; min-width: 0; margin: auto 0; padding: 1.35rem; overflow: hidden; }
+    .experience-gate__brand { margin-bottom: 1.5rem; }
+    .experience-gate__actions { flex-direction: column; }
+    .gate-btn--primary, .gate-btn--secondary { flex-basis: auto; width: 100%; }
+    .experience-gate__foot { display: none; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .experience-gate__fog { animation: none; }
-    .experience-gate--exit { animation: gateExitReduced 0.3s ease forwards; }
+    .experience-gate--exit { animation: gateExitReduced .25s ease forwards; }
     @keyframes gateExitReduced { to { opacity: 0; } }
   }
 </style>

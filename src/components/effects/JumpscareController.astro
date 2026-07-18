@@ -9,19 +9,22 @@ import { JUMPSCARE_FACE_IMAGE } from '@/config/jumpscare';
   <div class="jumpscare__vignette" aria-hidden="true"></div>
 
   <div class="jumpscare__shadow jumpscare__shadow--left" aria-hidden="true">
-    <img src="/images/jumpscare/garez-yuz.png" alt="" class="jumpscare__shadow-img" />
+    <img data-horror-src="/images/jumpscare/garez-yuz.png" alt="" class="jumpscare__shadow-img" />
   </div>
   <div class="jumpscare__shadow jumpscare__shadow--right" aria-hidden="true">
-    <img src="/images/jumpscare/garez-yuz.png" alt="" class="jumpscare__shadow-img" />
+    <img data-horror-src="/images/jumpscare/garez-yuz.png" alt="" class="jumpscare__shadow-img" />
   </div>
 
   <div class="jumpscare__image" aria-hidden="true">
     <div class="jumpscare__stage">
       <div class="jumpscare__face-glow" aria-hidden="true"></div>
       <div class="jumpscare__face-wrap jumpscare__face-wrap--photo">
-        <img src={JUMPSCARE_FACE_IMAGE} alt="" class="jumpscare__face" />
+        <img data-horror-src={JUMPSCARE_FACE_IMAGE} alt="" class="jumpscare__face" />
       </div>
       <p class="jumpscare__scream" aria-hidden="true">BORCUN HAZIR...</p>
+      <a href="#rezervasyon" class="jumpscare__quick-book" id="jumpscare-quick-book">
+        RANDEVU OLUŞTUR <span aria-hidden="true">↗</span>
+      </a>
     </div>
   </div>
 
@@ -303,6 +306,37 @@ import { JUMPSCARE_FACE_IMAGE } from '@/config/jumpscare';
     opacity: 1;
   }
 
+  .jumpscare__quick-book {
+    position: relative;
+    z-index: 7;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .65rem;
+    min-height: 48px;
+    margin-top: .15rem;
+    padding: .8rem 1.35rem;
+    border: 1px solid #ff554c;
+    color: #fff;
+    background: #a91f19;
+    box-shadow: 0 0 28px rgba(210,35,28,.5);
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: auto;
+  }
+
+  .jumpscare__image--visible .jumpscare__quick-book {
+    animation: quickBookIn .3s ease 1s forwards;
+  }
+
+  @keyframes quickBookIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   @keyframes screamIn {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
@@ -381,7 +415,7 @@ import { JUMPSCARE_FACE_IMAGE } from '@/config/jumpscare';
 
   .jumpscare__cta-eyebrow {
     font-size: 0.8rem;
-    color: #888;
+    color: #c2bbb5;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     margin-bottom: 0.5rem;
@@ -397,7 +431,7 @@ import { JUMPSCARE_FACE_IMAGE } from '@/config/jumpscare';
   }
 
   .jumpscare__cta-sub {
-    color: #aaa;
+    color: #ddd6d0;
     font-size: 0.95rem;
     max-width: 400px;
     margin-bottom: 2rem;

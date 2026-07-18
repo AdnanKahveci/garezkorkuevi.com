@@ -1,298 +1,278 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import FogLayers from '@/components/effects/FogLayers.astro';
-import SpiderWebs from '@/components/effects/SpiderWebs.astro';
-import CrawlingSpider from '@/components/effects/CrawlingSpider.astro';
-import HiddenSilhouette from '@/components/effects/HiddenSilhouette.astro';
 import GlitchText from '@/components/effects/GlitchText.astro';
 import SectionWebReveal from '@/components/effects/SectionWebReveal.astro';
-import HeroAtmosphere from '@/components/effects/HeroAtmosphere.astro';
-import HorrorHands from '@/components/effects/HorrorHands.astro';
 import ContactForm from '@/components/ContactForm.astro';
 import { WHATSAPP_URL } from '@/config/contact';
+import { BUSINESS, EXPERIENCE, SITE } from '@/config/site';
 
 const stories = [
-  { id: '001', title: 'İlk Garez', date: '14.03.1987', text: 'Evin eski sahibi, borçlu olduğu kişiyi bodrumda kitlediğini itiraf etti. Kapı mühürlendi; anahtar hiç bulunamadı.' },
-  { id: '002', title: 'Ödenmeyen Hesap', date: '22.08.1994', text: 'Son grup turdan biri geri dönmedi. Duvarlarda tırnak izleri, yerde yırtık bir mektup vardı. İmza okunmuyordu.' },
-  { id: '003', title: 'Fısıltılar', date: '05.11.2001', text: 'Ses kayıt cihazı aynı cümleyi defalarca yakaladı: "Sen de borçlusun." Transkriptin geri kalanı silindi.' },
-  { id: '004', title: 'Son Misafir', date: '31.10.2019', text: 'Tesis gece yarısı kapatıldı. Çıkışta bir ziyaretçi "içeride hâlâ öç bekleyen biri var" dedi. Kayıt tutulmadı.' },
+  { id: '001', title: 'İlk Garez', date: '14.03.1987', text: 'Evin eski sahibi, bodrumdaki kapıyı kendi elleriyle mühürledi. Anahtar hiçbir zaman bulunamadı.' },
+  { id: '002', title: 'Ödenmeyen Hesap', date: '22.08.1994', text: 'Duvarlarda tırnak izleri ve yerde tek cümlelik bir not vardı: “Borç, sahibini bulur.”' },
+  { id: '003', title: 'Son Kayıt', date: '31.10.2019', text: 'Gece yarısı alınan ses kaydında aynı fısıltı tekrarlandı: “Sen de borçlusun.”' },
 ];
 
-const jumpscareStoryIndex = Math.floor(stories.length / 2);
-
 const features = [
-  { icon: '🎭', title: 'Canlı Aktörler', text: 'Garezli karakterler her turda seni takip eder; hikâye seninle birlikte değişir.' },
-  { icon: '🏚️', title: 'Lanetli Mekânlar', text: 'Koridorlar, mühürlü odalar ve borcun ödendiği bodrum katları.' },
-  { icon: '🔦', title: 'Karanlık Atmosfer', text: 'Sınırlı ışık, sis ve seslerle garezin nefesini ensende hissedersin.' },
-  { icon: '⏱️', title: '45 Dakika Macera', text: 'Her grup için özel zamanlanmış, nefes kesen bir tur.' },
+  { no: '01', title: 'Canlı Aktörler', text: 'Sahne önceden yazılır; gerilim ekibinin kararlarıyla anlık olarak şekillenir.' },
+  { no: '02', title: 'Sinematik Atmosfer', text: 'Işık, ses, sis ve dekor tek bir hikâyenin parçaları olarak birlikte çalışır.' },
+  { no: '03', title: 'Takım Oyunu', text: 'Karanlık parkurlarda ilerlemek, görevleri çözmek ve çıkışı bulmak için ekibine güven.' },
+  { no: '04', title: 'Kontrollü Korku', text: 'Sınırlar rezervasyon öncesi netleşir; istediğin anda deneyimi durdurabilirsin.' },
+];
+
+const flow = [
+  { step: '01', title: 'Ekibini kur', text: `${EXPERIENCE.minGuests}–${EXPERIENCE.maxGuests} kişilik ekibini ve tercih ettiğin zamanı belirle.` },
+  { step: '02', title: 'Talebini gönder', text: 'Kısa formu doldur; hazır mesaj WhatsApp üzerinden ekibimize ulaşsın.' },
+  { step: '03', title: 'Gareze gir', text: 'Seans onayından sonra verilen saatte gel. Hikâye kapıda başlar.' },
 ];
 
 const galleryItems = [
-  { src: '/images/horror/gallery-1.svg', alt: 'Karanlık koridor' },
-  { src: '/images/horror/gallery-2.svg', alt: 'Eski kapı' },
-  { src: '/images/horror/gallery-3.svg', alt: 'Bodrum katı' },
-  { src: '/images/horror/gallery-4.svg', alt: 'Duvar yazıları' },
-  { src: '/images/horror/gallery-5.svg', alt: 'Kırık ayna' },
-  { src: '/images/horror/gallery-6.svg', alt: 'Merdivenler' },
-];
-
-const testimonials = [
-  { name: 'Elif K.', text: 'Garez gerçekten peşime düştü. Koridorun sonunda ne olduğunu hâlâ anlatamıyorum.', stars: 5 },
-  { name: 'Murat D.', text: 'Atmosfer inanılmaz. Aktörler o kadar ikna ediciydi ki hesabı ödeyeceğimizi sandık.', stars: 5 },
-  { name: 'Selin A.', text: 'İkinci kez geldik ve yine aynı korkuyu yaşadık. Her tur farklı — bu harika.', stars: 4 },
+  { src: '/images/horror/garez-hero-v2.webp', alt: 'Garez Korku Evi karanlık koridor ve merdiven atmosferi', featured: true },
+  { src: '/images/horror/garez-detail-red-door.webp', alt: 'Garez Korku Evi kırmızı ışıklı kapı detayı' },
+  { src: '/images/horror/garez-detail-shadow.webp', alt: 'Buzlu cam arkasında Garez silüeti' },
+  { src: '/images/horror/garez-detail-corridor.webp', alt: 'Karanlık koridorda bekleyen Garez figürü' },
 ];
 
 const faqs = [
-  { q: 'Kaç kişilik gruplar kabul ediliyor?', a: 'Minimum 2, maksimum 8 kişilik gruplar kabul edilmektedir.' },
-  { q: 'Yaş sınırı var mı?', a: '16 yaş altı ziyaretçiler ebeveyn eşliğinde katılabilir. 12 yaş altı kabul edilmemektedir.' },
-  { q: 'Fiziksel temas var mı?', a: 'Deneyimde hafif dokunsal etkileşimler olabilir. Rahatsızlık durumunda oyunculara bildirin.' },
-  { q: 'Rezervasyon iptali nasıl yapılır?', a: 'Tur saatinden 24 saat öncesine kadar ücretsiz iptal yapılabilir.' },
+  { q: 'Korku evi nedir?', a: 'Korku evi; karanlık atmosfer, canlı aktör performansı, görevler ve parkurları bir araya getiren takım tabanlı bir eğlence deneyimidir. Amaç yalnızca korkmak değil, ekip halinde ilerleyip hikâyeyi tamamlamaktır.' },
+  { q: 'Kaç kişilik gruplar kabul ediliyor?', a: `Garez Korku Evi ${EXPERIENCE.minGuests}–${EXPERIENCE.maxGuests} kişilik ekipler için uygundur. Daha kalabalık gruplar art arda seans planlamak için WhatsApp üzerinden bilgi alabilir.` },
+  { q: 'Oyun ne kadar sürüyor?', a: `Deneyim ${EXPERIENCE.durationLabel} sürer. Karşılama ve hazırlık için randevu saatinden önce gelmeniz önerilir.` },
+  { q: 'Yaş sınırı var mı?', a: `${EXPERIENCE.minimumAge} yaş altı ziyaretçiler kabul edilmez. 16 yaş altı katılımcılar için ebeveyn onayı veya eşliği istenebilir.` },
+  { q: 'Oyunda fiziksel temas var mı?', a: 'Temas ve gerilim seviyesi rezervasyon sırasında netleştirilir. Oyuncular aktörlere veya dekorlara zarar verecek biçimde temas edemez.' },
+  { q: 'Korkarsam oyundan çıkabilir miyim?', a: 'Evet. Deneyim ekip tarafından takip edilir ve çıkmak isteyen ziyaretçi istediği anda görevlilere işaret vererek oyunu sonlandırabilir.' },
+  { q: 'Nasıl randevu alabilirim?', a: 'Sayfadaki rezervasyon formunda kişi sayısı, tarih ve saat tercihini seç. Oluşan WhatsApp mesajını gönderdiğinde ekip uygun seans bilgisini paylaşır.' },
+];
+
+const homeStructuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${SITE.url}/#webpage`,
+    url: SITE.url,
+    name: SITE.title,
+    description: SITE.description,
+    inLanguage: SITE.language,
+    isPartOf: { '@id': `${SITE.url}/#website` },
+    about: { '@id': `${SITE.url}/#organization` },
+    primaryImageOfPage: { '@type': 'ImageObject', url: `${SITE.url}${SITE.ogImage}` },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${SITE.url}/#korku-evi-deneyimi`,
+    name: 'Garez Korku Evi deneyimi',
+    serviceType: 'Canlı aktörlü korku evi ve takım oyunu',
+    provider: { '@id': `${SITE.url}/#organization` },
+    ...(BUSINESS.detailsVerified && BUSINESS.city ? { areaServed: BUSINESS.city } : {}),
+    description: SITE.description,
+    url: `${SITE.url}/#rezervasyon`,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.q,
+      acceptedAnswer: { '@type': 'Answer', text: faq.a },
+    })),
+  },
 ];
 ---
 
-<BaseLayout>
-  <!-- 1. Sinematik Hero -->
-  <section class="hero" id="anasayfa">
-    <div class="hero__bg"></div>
-    <HeroAtmosphere />
-    <HorrorHands />
-    <div class="hero__red-light" aria-hidden="true"></div>
-    <FogLayers intensity={0.9} />
-    <SpiderWebs position="top-left">
-      <CrawlingSpider delay={2} pathId="spider-path-hero-1" />
-    </SpiderWebs>
-    <SpiderWebs position="top-right">
-      <CrawlingSpider delay={5} pathId="spider-path-hero-2" />
-    </SpiderWebs>
-    <HiddenSilhouette position="right" />
-    <div class="hero__tagline" aria-hidden="true">GAREZ ASLA UNUTMAZ</div>
+<BaseLayout structuredData={homeStructuredData}>
+  <section class="hero" id="anasayfa" aria-labelledby="hero-title">
+    <div class="hero__bg" aria-hidden="true"></div>
+    <div class="hero__shade" aria-hidden="true"></div>
+    <FogLayers intensity={0.42} />
+
     <div class="hero__content">
-      <p class="hero__brand">GAREZ KORKU EVİ</p>
-      <h1 class="hero__title">
-        <GlitchText text="HESABINI ÖDEMEYE HAZIR MISIN?" tag="span" />
-      </h1>
-      <p class="hero__subtitle">3 kat · 650 m² · 19 bölüm · Canlı aktörler · Labirentler & parkurlar</p>
-      <div class="hero__badges">
+      <p class="hero__eyebrow"><span></span> CANLI AKTÖRLÜ KORKU DENEYİMİ</p>
+      <h1 class="hero__title" id="hero-title">
         <span>GAREZ</span>
-        <span>KORKU</span>
-        <span>ÖÇ</span>
+        <GlitchText text="KORKU EVİ" tag="span" />
+      </h1>
+      <p class="hero__lead">Bazı hesaplar kapanmaz. Ekibini kur, karanlığın içine gir ve garez seni bulmadan çıkışı bul.</p>
+
+      <div class="hero__actions">
+        <a href="#rezervasyon" class="button button--primary">Randevu Oluştur <span aria-hidden="true">↗</span></a>
+        <a href="#deneyim" class="button button--ghost">Deneyimi Keşfet</a>
       </div>
-      <a href="#rezervasyon" class="hero__cta" data-jumpscare-booking>Randevu Al</a>
-      <div class="hero__scroll-hint" aria-hidden="true">
-        <span>Aşağı kaydır</span>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 14L4 8h12L10 14z" fill="currentColor"/></svg>
-      </div>
+
+      <dl class="hero__facts" aria-label="Deneyim özeti">
+        <div><dt>{EXPERIENCE.durationLabel}</dt><dd>Oyun süresi</dd></div>
+        <div><dt>{EXPERIENCE.minGuests}–{EXPERIENCE.maxGuests} kişi</dt><dd>Takım kapasitesi</dd></div>
+        <div><dt>Canlı aktör</dt><dd>Kontrollü gerilim</dd></div>
+      </dl>
     </div>
+
+    <a href="#deneyim" class="hero__scroll" aria-label="Deneyim bölümüne ilerle">
+      <span>KEŞFET</span><i aria-hidden="true"></i>
+    </a>
   </section>
 
-  <!-- 2. Korku Evi Hikâyesi -->
-  <section class="section section--story" id="hikaye">
-    <SectionWebReveal side="left" sectionId="hikaye" />
-    <h2 class="section__title reveal-fade">
-      <GlitchText text="GAREZ KAYITLARI" tag="span" />
-    </h2>
-    <p class="section__subtitle reveal-fade">Ödenmeyen borçların arşivi. Bazı sayfalar kasıtlı olarak yok edilmiş.</p>
-    <SpiderWebs position="bottom-left" />
-    {stories.map((story, i) => (
-      <>
-        {i === jumpscareStoryIndex && (
-          <div id="jumpscare-hikaye-trigger" class="jumpscare-scroll-marker" aria-hidden="true"></div>
-        )}
-        <article class="story__entry reveal-fade">
-          <h3>{story.title}</h3>
-          <p>{story.text}</p>
-          <time datetime={story.date}>{story.date} — Dosya #{story.id}</time>
-        </article>
-      </>
-    ))}
-  </section>
-
-  <!-- 3. Deneyim Özellikleri -->
-  <section class="section section--features" id="deneyim">
+  <section class="section section--intro" id="deneyim">
     <SectionWebReveal side="right" sectionId="deneyim" />
-    <h2 class="section__title reveal-from-left">
-      <GlitchText text="DENEYİM ÖZELLİKLERİ" tag="span" />
-    </h2>
-    <p class="section__subtitle reveal-from-left">Her detay, unutulmayan bir garez için tasarlandı.</p>
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">DENEYİM / 01</p>
+        <h2 class="section__title">Korkuyu izleme.<br /><em>İçinde kal.</em></h2>
+      </div>
+      <p class="section-heading__copy">Garez, klasik bir kaçış odasından fazlası: hikâye, sahne tasarımı ve canlı performansın aynı anda üzerine geldiği sinematik bir korku evi deneyimi.</p>
+    </div>
+
     <div class="feature__grid">
-      {features.map((f, i) => (
-        <div class={`feature__card reveal-from-${i % 2 === 0 ? 'left' : 'right'}`}>
-          <span class="feature__icon" aria-hidden="true">{f.icon}</span>
-          <h3>{f.title}</h3>
-          <p>{f.text}</p>
-        </div>
+      {features.map((feature) => (
+        <article class="feature__card reveal-fade">
+          <span class="feature__number" aria-hidden="true">{feature.no}</span>
+          <h3>{feature.title}</h3>
+          <p>{feature.text}</p>
+          <span class="feature__line" aria-hidden="true"></span>
+        </article>
       ))}
     </div>
   </section>
 
-  <!-- 4. Garez Korku Evi — Oyun Bilgisi -->
-  <section class="section section--frankenstein" id="oyun">
-    <SectionWebReveal side="right" sectionId="oyun" />
-    <FogLayers intensity={0.35} />
-    <HiddenSilhouette position="left" src="/images/jumpscare/garez-yuz.png" />
+  <section class="story-scene" id="hikaye" aria-labelledby="story-title">
+    <div class="story-scene__visual" aria-hidden="true">
+      <div class="story-scene__figure"></div>
+      <p>ARŞİV // G-1987</p>
+    </div>
+    <div class="story-scene__content">
+      <p class="section-kicker">HİKÂYE / 02</p>
+      <h2 class="section__title" id="story-title">Ev unutmadı.<br /><em>Garez de.</em></h2>
+      <p class="story-scene__lead">Yıllar önce bu evde bir hesap yarım kaldı. Kapılar mühürlendi, kayıtlar silindi; fakat içeride bekleyen şey hiçbir yere gitmedi.</p>
 
-    <p class="frankenstein__eyebrow reveal-fade">GAREZ KORKU EVİ · KADIKÖY</p>
-    <h2 class="section__title reveal-fade">
-      <GlitchText text="ÖDENMEYEN BORÇLARIN EVİNE HOŞ GELDİN" tag="span" />
-    </h2>
-
-    <div class="frankenstein__content">
-      <div class="frankenstein__story reveal-from-left">
-        <p>
-          Yıllar önce bu evde bir haksızlık işlendi. Adı unutuldu, ama <strong>garez</strong> kaldı.
-          Duvarlar, koridorlar ve mühürlü odalar hâlâ o öcü bekliyor.
-          İçeri giren her misafir, hesabın bir parçası olur.
-        </p>
-        <p>
-          Sen de ekibinle birlikte bu lanetli mekâna adım atacaksın.
-          Labirentlerin arasında canlı aktörler peşinde; garez ise her köşede.
-          <em>Bakalım borcunu ödeyip kurtulabilecek misin?</em>
-        </p>
+      <div class="story__timeline">
+        {stories.map((story, index) => (
+          <>
+            {index === 1 && <div id="jumpscare-hikaye-trigger" class="jumpscare-scroll-marker" aria-hidden="true"></div>}
+            <article class="story__entry reveal-fade">
+              <div class="story__meta"><span>#{story.id}</span><time datetime={story.date.split('.').reverse().join('-')}>{story.date}</time></div>
+              <h3>{story.title}</h3>
+              <p>{story.text}</p>
+            </article>
+          </>
+        ))}
       </div>
+      <a href="#rezervasyon" class="button button--primary story__booking" data-jumpscare-booking>
+        RANDEVU OLUŞTUR <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </section>
 
-      <div class="frankenstein__highlight reveal-from-right">
-        <p>
-          Kadıköy'de <strong>20 binden fazla oyunda</strong>, <strong>100 binden fazla oyuncunun</strong> deneyimlediği
-          <strong> Garez Korku Evi</strong>; ödenmemiş hesapların peşinden gelen yepyeni bir macerayla seni bekliyor.
-        </p>
-        <ul class="frankenstein__features-list">
-          <li>Labirentler & parkurlar</li>
-          <li>Canlı aktörler</li>
-          <li>Sinematik dekorlar</li>
-          <li>19 farklı bölüm</li>
+  <section class="section section--game" id="oyun">
+    <div class="game-card reveal-from-left">
+      <div class="game-card__image">
+        <img src="/images/horror/garez-hero-v2.webp" alt="Garez Korku Evi sinematik iç mekânı" width="1664" height="944" loading="lazy" decoding="async" />
+        <div class="game-card__stamp" aria-hidden="true">G<br /><span>87</span></div>
+      </div>
+      <div class="game-card__content">
+        <p class="section-kicker">OYUN / 03</p>
+        <h2 class="section__title">Bir ekip.<br />Tek çıkış.</h2>
+        <p>Karanlık koridorlar, değişen görevler ve ne zaman ortaya çıkacağını bilmediğin canlı aktörler… Garez’de herkes aynı hikâyeye girer; ama herkes aynı şekilde çıkamaz.</p>
+        <ul class="game-card__list">
+          <li><span>01</span> Karanlık parkurlar</li>
+          <li><span>02</span> Görev ve şifreler</li>
+          <li><span>03</span> Canlı performans</li>
+          <li><span>04</span> Ayarlanabilir gerilim</li>
         </ul>
+        <a href="#rezervasyon" class="text-link">EKİBİNİ KUR VE RANDEVU AL <span aria-hidden="true">→</span></a>
       </div>
-    </div>
-
-    <div class="frankenstein__stats">
-      <div class="frankenstein__stat reveal-fade">
-        <span class="frankenstein__stat-value">3</span>
-        <span class="frankenstein__stat-label">Kat</span>
-      </div>
-      <div class="frankenstein__stat reveal-fade">
-        <span class="frankenstein__stat-value">650</span>
-        <span class="frankenstein__stat-label">m² Alan</span>
-      </div>
-      <div class="frankenstein__stat reveal-fade">
-        <span class="frankenstein__stat-value">19</span>
-        <span class="frankenstein__stat-label">Bölüm</span>
-      </div>
-      <div class="frankenstein__stat reveal-fade">
-        <span class="frankenstein__stat-value">20K+</span>
-        <span class="frankenstein__stat-label">Oyun</span>
-      </div>
-      <div class="frankenstein__stat reveal-fade">
-        <span class="frankenstein__stat-value">100K+</span>
-        <span class="frankenstein__stat-label">Oyuncu</span>
-      </div>
-    </div>
-
-    <p class="frankenstein__cta-text reveal-fade">
-      Ekibini kur, rezervasyon yap ve garezin kapısından içeri gir.
-    </p>
-    <div class="frankenstein__actions reveal-fade">
-      <a href="#rezervasyon" class="frankenstein__cta-btn" data-jumpscare-booking>Rezervasyon Yap</a>
-      <a href={WHATSAPP_URL} class="frankenstein__cta-btn frankenstein__cta-btn--ghost" target="_blank" rel="noopener noreferrer">WhatsApp</a>
     </div>
   </section>
 
-  <div class="fast-shadow" aria-hidden="true">
-    <img src="/images/jumpscare/garez-yuz.png" alt="" class="fast-shadow__img" loading="eager" decoding="async" />
-  </div>
+  <section class="section section--process" aria-labelledby="process-title">
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">RANDEVU / 04</p>
+        <h2 class="section__title" id="process-title">Üç adımda<br /><em>karanlığa gir.</em></h2>
+      </div>
+      <p class="section-heading__copy">Ödeme veya kesin onay bu formda alınmaz. Talebin WhatsApp’a gider; uygun seans ekip tarafından onaylanır.</p>
+    </div>
+    <ol class="process-list">
+      {flow.map((item) => (
+        <li class="process-list__item reveal-fade">
+          <span>{item.step}</span>
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
 
-  <!-- 5. Galeri -->
   <section class="section section--gallery" id="galeri-bolum">
-    <SectionWebReveal side="left" sectionId="galeri-bolum" />
-    <h2 class="section__title reveal-from-right">
-      <GlitchText text="GALERİ" tag="span" />
-    </h2>
-    <p class="section__subtitle reveal-from-right">Garezin geride bıraktığı görüntüler.</p>
-    <div class="gallery__grid">
+    <div class="section-heading section-heading--center">
+      <div>
+        <p class="section-kicker">GÖRÜNTÜLER / 05</p>
+        <h2 class="section__title">Garez arşivi</h2>
+      </div>
+      <a href="/galeri/" class="text-link" data-transition>TÜM ARŞİVİ AÇ <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="gallery__grid gallery__grid--editorial">
       {galleryItems.map((item) => (
-        <div class="gallery__item">
-          <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
-        </div>
-      ))}
-    </div>
-    <a href="/galeri" class="gallery__more reveal-fade" data-transition>Tüm Galeriyi Gör →</a>
-  </section>
-
-  <!-- 6. Ziyaretçi Yorumları -->
-  <section class="section section--testimonials" id="yorumlar">
-    <SectionWebReveal side="right" sectionId="yorumlar" />
-    <h2 class="section__title reveal-fade">
-      <GlitchText text="ZİYARETÇİ YORUMLARI" tag="span" />
-    </h2>
-    <div class="testimonial__grid">
-      {testimonials.map((t) => (
-        <blockquote class="testimonial__card">
-          <p>"{t.text}"</p>
-          <footer>
-            <cite>{t.name}</cite>
-            <span class="testimonial__stars" aria-label={`${t.stars} yıldız`}>
-              {'★'.repeat(t.stars)}{'☆'.repeat(5 - t.stars)}
-            </span>
-          </footer>
-        </blockquote>
+        <figure class:list={['gallery__item', item.featured && 'gallery__item--featured']}>
+          <img src={item.src} alt={item.alt} width="800" height="600" loading={item.featured ? 'eager' : 'lazy'} decoding="async" />
+          <figcaption>GAREZ / KAYIT {String(galleryItems.indexOf(item) + 1).padStart(2, '0')}</figcaption>
+        </figure>
       ))}
     </div>
   </section>
 
-  <!-- 8. SSS -->
   <section class="section section--faq" id="sss">
-    <h2 class="section__title reveal-from-left">
-      <GlitchText text="SIK SORULAN SORULAR" tag="span" />
-    </h2>
-    <div class="faq__list">
-      {faqs.map((faq, i) => (
-        <details class={`faq__item reveal-from-${i % 2 === 0 ? 'left' : 'right'}`}>
-          <summary>{faq.q}</summary>
-          <p>{faq.a}</p>
-        </details>
-      ))}
+    <div class="faq-layout">
+      <div class="faq-layout__heading">
+        <p class="section-kicker">BİLMEN GEREKENLER / 06</p>
+        <h2 class="section__title">Korku evi<br />hakkında.</h2>
+        <p>Yanıtını bulamadığın bir konu varsa WhatsApp üzerinden ekibe doğrudan yazabilirsin.</p>
+        <a href={WHATSAPP_URL} class="text-link" target="_blank" rel="noopener noreferrer">WHATSAPP’TAN SOR <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="faq__list">
+        {faqs.map((faq, index) => (
+          <details class="faq__item reveal-fade" open={index === 0}>
+            <summary><span>{String(index + 1).padStart(2, '0')}</span>{faq.q}</summary>
+            <p>{faq.a}</p>
+          </details>
+        ))}
+      </div>
     </div>
   </section>
 
-  <!-- 9. Konum ve İletişim -->
   <section class="section section--location" id="iletisim">
-    <h2 class="section__title reveal-from-right">
-      <GlitchText text="KONUM & İLETİŞİM" tag="span" />
-    </h2>
-    <div class="location__grid">
-      <div class="location__info reveal-from-left">
-        <p><strong>Adres:</strong> Kadıköy, İstanbul</p>
-        <p><strong>Telefon:</strong> <a href="tel:+905551234567">0555 123 45 67</a></p>
-        <p><strong>E-posta:</strong> <a href="mailto:info@garezkorkuevi.com">info@garezkorkuevi.com</a></p>
-        <p><strong>Çalışma Saatleri:</strong> Cuma–Pazar 19:00–01:00</p>
-        <a href={WHATSAPP_URL} class="location__whatsapp" target="_blank" rel="noopener noreferrer">
-          WhatsApp ile Yaz
-        </a>
+    <div class="location-card">
+      <div class="location-card__visual" aria-hidden="true">
+        <span class="location-card__pulse"></span>
+        <span class="location-card__pin"><b>G</b></span>
+        <p>{BUSINESS.detailsVerified && BUSINESS.city ? String(BUSINESS.city).toLocaleUpperCase('tr-TR') : 'GİZLİ KONUM'} // GAREZ</p>
       </div>
-      <div class="location__map reveal-from-right" aria-hidden="true">
-        <div class="location__map-placeholder">
-          <span>📍</span>
-          <p>Harita</p>
+      <div class="location-card__content">
+        <p class="section-kicker">İLETİŞİM / 07</p>
+        <h2 class="section__title">Kapıyı<br /><em>bul.</em></h2>
+        <p>Güncel konum, müsait seans ve katılım detayları rezervasyon talebinin ardından ekibimiz tarafından paylaşılır.</p>
+        <div class="location-card__links">
+          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp <span>↗</span></a>
+          {BUSINESS.detailsVerified && BUSINESS.email && (
+            <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email} <span>↗</span></a>
+          )}
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 10. Rezervasyon CTA -->
   <section class="final-cta reservation-area" id="rezervasyon" data-safe-zone="reservation">
-    <div class="final-cta__red-glow" aria-hidden="true"></div>
-    <div class="final-cta__doors" aria-hidden="true">
-      <div class="final-cta__door final-cta__door--left"></div>
-      <div class="final-cta__door final-cta__door--right"></div>
-    </div>
+    <div class="final-cta__bg" aria-hidden="true"></div>
     <div class="final-cta__content">
-      <h2 class="section__title">GAREZİN KAPISINDAN GEÇMEYE HAZIR MISIN?</h2>
-      <p class="section__subtitle">
-        Rezervasyon yap, ödenmeyen borçların evine adım at.
-        Ekipman gerekmez — sadece cesaret.
-      </p>
+      <p class="section-kicker">SON KARAR</p>
+      <h2 class="section__title">Garez seni<br /><em>bekliyor.</em></h2>
+      <p class="section__subtitle">Ekibini ve tercih ettiğin zamanı seç. WhatsApp mesajını gönder; uygun seansı birlikte netleştirelim.</p>
       <div class="final-cta__form-wrap">
         <ContactForm />
       </div>
+      <p class="final-cta__privacy">Form ödeme almaz. WhatsApp açılmadan hiçbir bilgi gönderilmez.</p>
     </div>
   </section>
+
+  <aside class="mobile-booking-bar" aria-label="Hızlı rezervasyon">
+    <div><span>GAREZ</span><small>{EXPERIENCE.minGuests}–{EXPERIENCE.maxGuests} KİŞİ · {EXPERIENCE.durationLabel.toLocaleUpperCase('tr-TR')}</small></div>
+    <a href="#rezervasyon">RANDEVU</a>
+  </aside>
 </BaseLayout>

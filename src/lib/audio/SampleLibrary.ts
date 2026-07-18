@@ -169,13 +169,5 @@ class SampleLibrary {
   }
 }
 
+// Dosyalar ilk sayfa yükünde değil, yalnızca kullanıcı sesli deneyimi seçtiğinde indirilir.
 export const sampleLibrary = new SampleLibrary();
-
-// Sayfa yüklenir yüklenmez ses dosyalarını indir
-if (typeof window !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => sampleLibrary.prefetchFiles());
-  } else {
-    sampleLibrary.prefetchFiles();
-  }
-}

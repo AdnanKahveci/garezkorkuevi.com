@@ -15,13 +15,13 @@ export interface ExperiencePreferences {
 const STORAGE_KEY = 'horror-experience-prefs';
 
 const defaults: ExperiencePreferences = {
-  audio: 'sound',
+  audio: 'silent',
   motion: 'full',
-  fearLevel: 'intense',
+  fearLevel: 'normal',
   jumpscareEnabled: true,
   horrorEffectsEnabled: true,
-  sessionStarted: true,
-  gatePassed: true,
+  sessionStarted: false,
+  gatePassed: false,
 };
 
 export function getPreferences(): ExperiencePreferences {
@@ -29,9 +29,9 @@ export function getPreferences(): ExperiencePreferences {
   try {
     const stored = sessionStorage.getItem(STORAGE_KEY);
     const merged = stored ? { ...defaults, ...JSON.parse(stored) } : { ...defaults };
-    // Her sayfa yüklemesinde sesli + gate geçilmiş
-    merged.audio = 'sound';
-    merged.gatePassed = true;
+    if (!stored && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      merged.motion = 'reduced';
+    }
     return merged;
   } catch { /* ignore */ }
   return { ...defaults };
@@ -97,5 +97,5 @@ export function initMobilePerfMode(): void {
 }
 
 export function getEffectiveFearLevel(): FearLevel {
-  return 'intense';
+  return getPreferences().fearLevel;
 }

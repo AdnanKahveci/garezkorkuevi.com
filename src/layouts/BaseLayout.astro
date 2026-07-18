@@ -6,53 +6,132 @@ import HorrorTransition from '@/components/effects/HorrorTransition.astro';
 import JumpscareController from '@/components/effects/JumpscareController.astro';
 import AtmosphereOverlay from '@/components/effects/AtmosphereOverlay.astro';
 import SidePassShadow from '@/components/effects/SidePassShadow.astro';
+import ExperienceGate from '@/components/effects/ExperienceGate.astro';
+import { BUSINESS, SITE } from '@/config/site';
 
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  canonicalPath?: string;
+  noindex?: boolean;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
-  title = 'Garez Korku Evi — Ödenmeyen Borçların Evi',
-  description = 'Garez Korku Evi: canlı aktörler, labirentler ve unutulmayan bir öç hikâyesi. Rezervasyon yap, hesabını ödemeye gel.',
+  title = SITE.title,
+  description = SITE.description,
+  image = SITE.ogImage,
+  canonicalPath = Astro.url.pathname,
+  noindex = false,
+  structuredData = [],
 } = Astro.props;
+
+const canonicalUrl = new URL(canonicalPath, SITE.url).toString();
+const socialImageUrl = new URL(image, SITE.url).toString();
+const isHome = Astro.url.pathname === '/';
+const sameAs = [BUSINESS.instagramUrl].filter(Boolean);
+
+const baseStructuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': BUSINESS.detailsVerified ? 'LocalBusiness' : 'Organization',
+    '@id': `${SITE.url}/#organization`,
+    name: SITE.name,
+    url: SITE.url,
+    logo: `${SITE.url}/favicon.svg`,
+    image: socialImageUrl,
+    description: SITE.description,
+    ...(BUSINESS.detailsVerified && BUSINESS.email ? { email: BUSINESS.email } : {}),
+    ...(BUSINESS.detailsVerified && BUSINESS.city ? { areaServed: BUSINESS.city } : {}),
+    ...(BUSINESS.detailsVerified && BUSINESS.phoneE164 ? { telephone: BUSINESS.phoneE164 } : {}),
+    ...(BUSINESS.detailsVerified && BUSINESS.streetAddress && BUSINESS.city ? {
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: BUSINESS.streetAddress,
+        ...(BUSINESS.district ? { addressLocality: BUSINESS.district } : {}),
+        addressRegion: BUSINESS.city,
+        ...(BUSINESS.postalCode ? { postalCode: BUSINESS.postalCode } : {}),
+        addressCountry: 'TR',
+      },
+    } : {}),
+    ...(BUSINESS.detailsVerified && BUSINESS.openingHours ? { openingHours: BUSINESS.openingHours } : {}),
+    ...(BUSINESS.detailsVerified && BUSINESS.mapUrl ? { hasMap: BUSINESS.mapUrl } : {}),
+    ...(sameAs.length ? { sameAs } : {}),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE.url}/#website`,
+    url: SITE.url,
+    name: SITE.name,
+    inLanguage: SITE.language,
+    publisher: { '@id': `${SITE.url}/#organization` },
+  },
+];
+
+const pageStructuredData = Array.isArray(structuredData) ? structuredData : [structuredData];
+const jsonLd = [...baseStructuredData, ...pageStructuredData];
 ---
 
 <!doctype html>
-<html lang="tr">
+<html lang={SITE.language}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#090706" />
+    <meta name="color-scheme" content="dark" />
     <meta name="description" content={description} />
+    <meta name="keywords" content={SITE.keywords.join(', ')} />
+    <meta name="author" content={SITE.name} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
+    <meta name="googlebot" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
+
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang="tr-TR" href={canonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preload" href="/audio/effects/ringtone.mp3" as="fetch" crossorigin="anonymous" />
-    <link rel="preload" href="/audio/effects/jumpscare.mp3" as="fetch" crossorigin="anonymous" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {isHome && <link rel="preload" href="/images/horror/garez-hero-v2.webp" as="image" type="image/webp" fetchpriority="high" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Garez Korku Evi sinematik korku deneyimi" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <title>{title}</title>
   </head>
-  <body class="experience-active horror-live">
-    <script is:inline>
-      try {
-        if (matchMedia('(max-width:768px)').matches || 'ontouchstart' in window) {
-          document.documentElement.classList.add('lite-mode');
-          document.body.classList.add('mobile-perf');
-        }
-      } catch (e) {}
-    </script>
-
+  <body>
+    <a class="skip-link" href="#main-content">İçeriğe geç</a>
+    <ExperienceGate />
     <AtmosphereOverlay />
-    <SidePassShadow direction="left" top="18%" trigger="#hikaye" src="/images/jumpscare/garez-yuz.png" />
-    <SidePassShadow direction="right" top="42%" trigger="#oyun" src="/images/jumpscare/garez-yuz.png" />
-    <SidePassShadow direction="left" top="28%" trigger="#deneyim" src="/images/jumpscare/garez-yuz.png" />
-    <SidePassShadow direction="right" top="52%" trigger="#galeri-bolum" src="/images/jumpscare/garez-yuz.png" />
-    <SidePassShadow direction="left" top="65%" size="lg" trigger="#yorumlar" src="/images/jumpscare/garez-yuz.png" />
+
+    {isHome && (
+      <>
+        <SidePassShadow direction="left" top="25%" trigger="#hikaye" src="/images/jumpscare/garez-yuz.png" />
+        <SidePassShadow direction="right" top="46%" trigger="#deneyim" src="/images/jumpscare/garez-yuz.png" />
+        <JumpscareController />
+      </>
+    )}
+
     <HorrorTransition />
-    <JumpscareController />
 
     <div class="vhs-overlay" aria-hidden="true">
-      <div class="rec-indicator">● REC</div>
+      <div class="rec-indicator"><span></span> LIVE EXPERIENCE</div>
       <div class="vhs-timestamp" id="vhs-timestamp"></div>
     </div>
 
@@ -63,18 +142,21 @@ const {
     <Footer />
 
     <script>
-      import { setupHorrorBoot } from '@/lib/initHorrorExperience';
-      import { savePreferences } from '@/lib/scare-engine/ExperienceState';
-      import { ensureGestureAudioUnlock, bootstrapSoundExperience } from '@/lib/audio/bootstrapAudio';
+      let horrorLoadStarted = false;
+      const loadHorrorExperience = () => {
+        if (horrorLoadStarted) return;
+        horrorLoadStarted = true;
+        void import('@/lib/initHorrorExperience')
+          .then(({ bootHorrorExperience }) => bootHorrorExperience())
+          .catch((error) => console.error('Deneyim yüklenemedi:', error));
+      };
 
-      savePreferences({
-        audio: 'sound',
-        gatePassed: true,
-        sessionStarted: true,
-      });
-      ensureGestureAudioUnlock();
-      bootstrapSoundExperience().catch(() => {});
-      setupHorrorBoot();
+      window.addEventListener('experience-started', loadHorrorExperience);
+
+      try {
+        const stored = sessionStorage.getItem('horror-experience-prefs');
+        if (stored && JSON.parse(stored).gatePassed) loadHorrorExperience();
+      } catch { /* yeni veya kısıtlı oturum */ }
     </script>
   </body>
 </html>
@@ -82,22 +164,42 @@ const {
 <style>
   .vhs-overlay {
     position: fixed;
-    top: 1rem;
-    right: 1rem;
+    top: calc(var(--header-height) + 0.85rem);
+    right: 1.25rem;
     z-index: 40;
     pointer-events: none;
-    font-family: monospace;
-    font-size: 0.7rem;
-    color: rgba(255,0,0,0.5);
-    opacity: 0.6;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.38);
+    text-align: right;
   }
+
   .rec-indicator {
-    animation: recBlink 2s ease infinite;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.45rem;
   }
+
+  .rec-indicator span {
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: #ff2c2c;
+    box-shadow: 0 0 10px rgba(255,44,44,.9);
+    animation: recBlink 1.8s ease infinite;
+  }
+
   @keyframes recBlink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
+    0%, 45%, 100% { opacity: 1; }
+    50%, 90% { opacity: 0.18; }
   }
-  .vhs-timestamp { color: rgba(255,255,255,0.3); margin-top: 0.25rem; }
-  body.reduced-motion-active .rec-indicator { animation: none; }
+
+  .vhs-timestamp { margin-top: 0.25rem; color: rgba(255,255,255,0.22); }
+  body.reduced-motion-active .rec-indicator span { animation: none; }
+
+  @media (max-width: 700px) {
+    .vhs-overlay { display: none; }
+  }
 </style>

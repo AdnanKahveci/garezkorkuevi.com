@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://garezkorkuevi.com/sitemap-index.xml
+

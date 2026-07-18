@@ -1,43 +1,125 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import SpiderWebs from '@/components/effects/SpiderWebs.astro';
-import GlitchText from '@/components/effects/GlitchText.astro';
+import { SITE } from '@/config/site';
 
 const images = [
-  { src: '/images/horror/gallery-1.svg', title: 'Koridor I', desc: 'Garezin duyulduğu kanat' },
-  { src: '/images/horror/gallery-2.svg', title: 'Kapı VII', desc: 'Mühürlü borcun odası' },
-  { src: '/images/horror/gallery-3.svg', title: 'Bodrum', desc: 'Hesabın ödendiği yer' },
-  { src: '/images/horror/gallery-4.svg', title: 'Duvar', desc: 'Silinmeyen isimler' },
-  { src: '/images/horror/gallery-5.svg', title: 'Ayna', desc: 'Yansıma tutarsızlığı' },
-  { src: '/images/horror/gallery-6.svg', title: 'Merdiven', desc: 'Üçüncü kata çıkış' },
-  { src: '/images/horror/corridor-1.svg', title: 'Kayıt 14', desc: 'Güvenlik kamerası' },
-  { src: '/images/horror/corridor-2.svg', title: 'Kayıt 22', desc: 'Hareket algılandı' },
+  { src: '/images/horror/garez-hero-v2.webp', title: 'Koridor 00', desc: 'Garezin başladığı yer', alt: 'Garez Korku Evi karanlık koridor ve merdiven sahnesi' },
+  { src: '/images/horror/garez-detail-stairs.webp', title: 'Merdiven 01', desc: 'Yukarıdan gelen ses', alt: 'Garez Korku Evi karanlık merdivenleri' },
+  { src: '/images/horror/garez-detail-red-door.webp', title: 'Kapı 07', desc: 'Kırmızı odanın girişi', alt: 'Garez Korku Evi kırmızı ışıklı kapısı' },
+  { src: '/images/horror/garez-detail-corridor.webp', title: 'Kayıt 14', desc: 'Koridorda hareket algılandı', alt: 'Karanlık koridorda bekleyen Garez figürü' },
+  { src: '/images/horror/garez-detail-shadow.webp', title: 'Kayıt 22', desc: 'Camın arkasında biri var', alt: 'Buzlu cam arkasında beliren korku silüeti' },
+];
+
+const galleryStructuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Garez Korku Evi Galeri',
+    url: `${SITE.url}/galeri/`,
+    description: 'Garez Korku Evi atmosferi, karanlık koridorlar ve korku oyunu dekorlarından görüntüler.',
+    inLanguage: 'tr',
+    isPartOf: { '@id': `${SITE.url}/#website` },
+    primaryImageOfPage: { '@type': 'ImageObject', url: `${SITE.url}/images/og-garez-korku-evi.webp` },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE.url },
+      { '@type': 'ListItem', position: 2, name: 'Galeri', item: `${SITE.url}/galeri/` },
+    ],
+  },
 ];
 ---
 
-<BaseLayout title="Galeri — Garez Korku Evi">
-  <section class="section" style="padding-top: 3rem;">
-    <SpiderWebs position="top-left" />
-    <SpiderWebs position="top-right" />
-    <h1 class="section__title">
-      <GlitchText text="GAREZ ARŞİVİ" tag="span" />
-    </h1>
-    <p class="section__subtitle">Evin geride bıraktığı görüntüler. Bazıları kasıtlı bozulmuş.</p>
+<BaseLayout
+  title="Garez Korku Evi Galeri | Korku Evi Atmosferi"
+  description="Garez Korku Evi'nin karanlık koridorlarını, sinematik dekorlarını ve korku atmosferini galeride keşfet. Ekibini kur, deneyim için randevu al."
+  canonicalPath="/galeri/"
+  structuredData={galleryStructuredData}
+>
+  <header class="gallery-hero">
+    <div class="gallery-hero__bg" aria-hidden="true"></div>
+    <div class="gallery-hero__content">
+      <nav class="breadcrumbs" aria-label="Sayfa yolu">
+        <a href="/">Ana Sayfa</a><span aria-hidden="true">/</span><span>Galeri</span>
+      </nav>
+      <p class="section-kicker">GÖRÜNTÜ KAYITLARI</p>
+      <h1>Garez<br /><em>arşivi.</em></h1>
+      <p>Bazı görüntüler kasıtlı olarak bozuldu. Bazılarında ise hiç kayda alınmaması gereken bir şey var.</p>
+    </div>
+    <p class="gallery-hero__index" aria-hidden="true">ARCHIVE // {images.length.toString().padStart(2, '0')}</p>
+  </header>
 
-    <div class="gallery__grid" style="margin-top: 2rem;">
-      {images.map((img) => (
-        <figure class="gallery__item reveal-fade">
-          <img src={img.src} alt={img.title} loading="lazy" decoding="async" />
-          <figcaption style="position:absolute;bottom:0;left:0;right:0;padding:0.75rem;background:rgba(0,0,0,0.7);font-size:0.8rem;">
-            <strong style="color:#ccc;">{img.title}</strong>
-            <span style="color:#666;display:block;">{img.desc}</span>
+  <section class="gallery-page section" aria-labelledby="gallery-grid-title">
+    <div class="gallery-page__heading">
+      <div>
+        <p class="section-kicker">SEÇİLİ KAYITLAR</p>
+        <h2 class="section__title" id="gallery-grid-title">İçeriden<br />görüntüler.</h2>
+      </div>
+      <p>Görseller deneyimin atmosferini yansıtır. Oyun içindeki sürprizlerin tamamı özellikle gösterilmez.</p>
+    </div>
+
+    <div class="gallery-page__grid">
+      {images.map((image, index) => (
+        <figure class:list={['gallery-page__item', index === 0 && 'gallery-page__item--wide', index === 3 && 'gallery-page__item--tall']}>
+          <img src={image.src} alt={image.alt} width="1000" height="750" loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
+          <figcaption>
+            <div><strong>{image.title}</strong><span>{image.desc}</span></div>
+            <span>{String(index + 1).padStart(2, '0')}</span>
           </figcaption>
         </figure>
       ))}
     </div>
 
-    <p style="margin-top: 2rem; text-align: center;">
-      <a href="/" class="hero__cta" data-transition>Ana Sayfaya Dön</a>
-    </p>
+    <div class="gallery-page__cta">
+      <p>Fotoğraflar yetmez.<br /><em>İçeri girmen gerek.</em></p>
+      <a href="/#rezervasyon" class="button button--primary">Randevu Oluştur <span aria-hidden="true">↗</span></a>
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  .gallery-hero { position: relative; display: grid; min-height: 650px; align-items: end; overflow: hidden; isolation: isolate; padding: calc(var(--header-height) + 5rem) max(var(--page-gutter), calc((100vw - var(--content-width)) / 2)) 5rem; }
+  .gallery-hero__bg { position: absolute; inset: 0; z-index: -2; background: linear-gradient(90deg, rgba(5,5,5,.55), rgba(5,5,5,.12), rgba(5,5,5,.64)), linear-gradient(0deg, var(--color-bg), transparent 50%), url('/images/horror/garez-hero-v2.webp') center / cover; filter: saturate(.5) brightness(.7); }
+  .gallery-hero__content { position: relative; z-index: 2; width: min(100%, 820px); }
+  .breadcrumbs { display: flex; gap: .55rem; margin-bottom: 3rem; color: #6f6964; font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; }
+  .breadcrumbs a { text-decoration: none; }
+  .breadcrumbs a:hover { color: #fff; }
+  .gallery-hero h1 { color: #f3ede7; font: 650 clamp(3.4rem, 10vw, 8.4rem)/.84 var(--font-display); letter-spacing: -.06em; }
+  .gallery-hero h1 em { color: #c42d26; font-style: normal; }
+  .gallery-hero__content > p:last-child { max-width: 570px; margin-top: 1.5rem; color: #aaa29b; font-size: .88rem; line-height: 1.75; }
+  .gallery-hero__index { position: absolute; right: max(var(--page-gutter), calc((100vw - var(--content-width)) / 2)); bottom: 5.2rem; color: rgba(255,255,255,.34); font: 500 .55rem ui-monospace, monospace; letter-spacing: .18em; }
+
+  .gallery-page__heading { display: grid; grid-template-columns: 1fr .55fr; gap: 4rem; align-items: end; margin-bottom: 4rem; }
+  .gallery-page__heading > p { padding-bottom: .4rem; color: #817a74; font-size: .8rem; line-height: 1.8; }
+  .gallery-page__grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-flow: dense; gap: .8rem; }
+  .gallery-page__item { position: relative; aspect-ratio: 4/3; overflow: hidden; border: 1px solid var(--color-line); background: #111; }
+  .gallery-page__item--wide { grid-column: span 2; aspect-ratio: 16/9; }
+  .gallery-page__item--tall { grid-row: span 2; aspect-ratio: auto; }
+  .gallery-page__item img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.48) contrast(1.08) brightness(.78); transition: transform .7s cubic-bezier(.2,.7,.2,1), filter .5s ease; }
+  .gallery-page__item:hover img { transform: scale(1.035); filter: saturate(.72) brightness(.9); }
+  .gallery-page__item figcaption { position: absolute; inset: auto 0 0; display: flex; justify-content: space-between; align-items: end; gap: 1rem; padding: 2.5rem 1rem .85rem; color: #d9d1cb; background: linear-gradient(transparent, rgba(0,0,0,.82)); }
+  .gallery-page__item figcaption > div { display: grid; }
+  .gallery-page__item figcaption strong { font: 600 .72rem var(--font-display); }
+  .gallery-page__item figcaption span { margin-top: .25rem; color: #746e69; font: 500 .52rem ui-monospace, monospace; letter-spacing: .08em; }
+  .gallery-page__cta { display: flex; justify-content: space-between; align-items: center; gap: 2rem; margin-top: 5rem; padding: 3rem 0; border-block: 1px solid var(--color-line); }
+  .gallery-page__cta p { color: #d8d1ca; font: 550 clamp(1.5rem, 3vw, 2.5rem)/1.25 var(--font-display); }
+  .gallery-page__cta em { color: #bd2c25; font-style: normal; }
+
+  @media (max-width: 760px) {
+    .gallery-hero { min-height: 590px; padding-bottom: 3rem; }
+    .gallery-hero__bg { background-position: 28% center; }
+    .gallery-hero__index { display: none; }
+    .gallery-page__heading { grid-template-columns: 1fr; gap: 1.25rem; }
+    .gallery-page__grid { grid-template-columns: 1fr 1fr; }
+    .gallery-page__item--wide { grid-column: span 2; }
+    .gallery-page__item--tall { grid-row: auto; aspect-ratio: 4/3; }
+    .gallery-page__cta { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (max-width: 440px) {
+    .gallery-page__grid { grid-template-columns: 1fr; }
+    .gallery-page__item--wide { grid-column: auto; aspect-ratio: 4/3; }
+  }
+</style>

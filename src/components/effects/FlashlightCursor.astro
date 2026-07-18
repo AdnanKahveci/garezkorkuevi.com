@@ -13,6 +13,7 @@
 
     const overlay = document.getElementById('flashlight-overlay');
     if (!overlay) return;
+    const flashlight = overlay;
 
     if (window.matchMedia('(pointer: coarse)').matches) return;
 
@@ -27,11 +28,11 @@
     function enable() {
       if (enabled) return;
       enabled = true;
-      overlay.classList.add('flashlight--active');
+      flashlight.classList.add('flashlight--active');
     }
 
     function updateGradient() {
-      overlay.style.background = `radial-gradient(circle 280px at ${currentX}px ${currentY}px, transparent 0%, transparent 120px, rgba(0,0,0,0.12) 220px, rgba(0,0,0,0.22) 100%)`;
+      flashlight.style.background = `radial-gradient(circle 280px at ${currentX}px ${currentY}px, transparent 0%, transparent 120px, rgba(0,0,0,0.12) 220px, rgba(0,0,0,0.22) 100%)`;
     }
 
     function waitForExperience() {
@@ -59,7 +60,7 @@
       const inSafeZone = safeZones.some((zone) =>
         target.closest(`[data-safe-zone="${zone}"], .${zone}, nav, form, .reservation-area, header`)
       );
-      overlay.classList.toggle('flashlight--dimmed', !!inSafeZone);
+      flashlight.classList.toggle('flashlight--dimmed', !!inSafeZone);
     });
 
     const cleanup = onAnimationFrame(() => {

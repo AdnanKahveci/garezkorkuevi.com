@@ -1,7 +1,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { isReducedMotion, isMobile, isLiteMode } from '../scare-engine/ExperienceState';
-import { setHorrorSceneActive, setInReservation } from '../scare-engine/JumpscareEngine';
+import { isReducedMotion, isLiteMode } from '../scare-engine/ExperienceState';
+import { setInReservation } from '../scare-engine/JumpscareEngine';
 import { audioManager } from '../audio/AudioManager';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -19,7 +19,7 @@ export function initScrollScenes(): void {
 
   initHeroScene();
   initRevealSlides();
-  initFrankensteinScene();
+  initGameScene();
   initSideShadowPasses();
   initWebReveals();
   initStoryRevealScene();
@@ -75,24 +75,39 @@ function initHeroScene(): void {
   const hero = document.querySelector('.hero');
   if (!hero) return;
 
+  const eyebrow = hero.querySelector('.hero__eyebrow');
   const title = hero.querySelector('.hero__title');
-  const subtitle = hero.querySelector('.hero__subtitle');
-  const cta = hero.querySelector('.hero__cta');
-  const scrollHint = hero.querySelector('.hero__scroll-hint');
+  const subtitle = hero.querySelector('.hero__lead');
+  const actions = hero.querySelector('.hero__actions');
+  const facts = hero.querySelector('.hero__facts');
+  const scrollHint = hero.querySelector('.hero__scroll');
+
+  // Hero metni sayfanın ana içeriğidir; sekme arka planda açıldığında veya
+  // GSAP zaman çizelgesi durakladığında görünmez durumda kalmamalıdır.
+  // Önceki bir HMR/animasyon çalışmasından kalan inline opacity değerlerini de temizle.
+  const entranceElements = [eyebrow, title, subtitle, actions, facts, scrollHint]
+    .filter((element): element is Element => element !== null);
+  gsap.set(entranceElements, { opacity: 1, visibility: 'visible' });
 
   const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
 
+  if (eyebrow) {
+    tl.from(eyebrow, { y: 18, duration: 0.65 }, 0.15);
+  }
   if (title) {
-    tl.from(title, { opacity: 0, y: 50, duration: 1.2 }, 0.3);
+    tl.from(title, { y: 45, duration: 1.1 }, 0.25);
   }
   if (subtitle) {
-    tl.from(subtitle, { opacity: 0, y: 30, duration: 0.9 }, 0.7);
+    tl.from(subtitle, { y: 24, duration: 0.8 }, 0.6);
   }
-  if (cta) {
-    tl.from(cta, { opacity: 0, scale: 0.9, duration: 0.7 }, 1);
+  if (actions) {
+    tl.from(actions, { y: 18, duration: 0.7 }, 0.8);
+  }
+  if (facts) {
+    tl.from(facts, { y: 14, duration: 0.65 }, 1);
   }
   if (scrollHint) {
-    tl.from(scrollHint, { opacity: 0, y: 10, duration: 0.6 }, 1.3);
+    tl.from(scrollHint, { y: 10, duration: 0.6 }, 1.3);
     gsap.to(scrollHint, {
       y: 8,
       duration: 1.5,
@@ -127,7 +142,7 @@ function initRevealSlides(): void {
       scrollTrigger: {
         trigger: el,
         start: 'top 85%',
-        toggleActions: 'play none none reverse',
+        once: true,
       },
     });
   });
@@ -141,7 +156,7 @@ function initRevealSlides(): void {
       scrollTrigger: {
         trigger: el,
         start: 'top 85%',
-        toggleActions: 'play none none reverse',
+        once: true,
       },
     });
   });
@@ -154,13 +169,13 @@ function initRevealSlides(): void {
       scrollTrigger: {
         trigger: el,
         start: 'top 88%',
-        toggleActions: 'play none none reverse',
+        once: true,
       },
     });
   });
 }
 
-function initFrankensteinScene(): void {
+function initGameScene(): void {
   const section = document.querySelector('#oyun');
   if (!section) return;
 
@@ -175,7 +190,7 @@ function initFrankensteinScene(): void {
       scrollTrigger: {
         trigger: section,
         start: 'top 70%',
-        toggleActions: 'play none none reverse',
+        once: true,
       },
     });
   });
@@ -237,14 +252,6 @@ function initSideShadowPasses(): void {
   }
 }
 
-/** Hemen görünür gölge geçişi — deneyim başladıktan sonra */
-function initWelcomeShadowPasses(): void {
-  if (isMobile()) return;
-
-  setTimeout(() => playSideShadowPass('left', '30%'), 2000);
-  setTimeout(() => playSideShadowPass('right', '55%'), 4500);
-}
-
 export function playSideShadowPass(direction: 'left' | 'right', top = '40%'): void {
   if (isReducedMotion()) return;
 
@@ -289,26 +296,6 @@ export function playSideShadowPass(direction: 'left' | 'right', top = '40%'): vo
     });
 }
 
-function initPeriodicShadowPasses(): void {
-  if (isReducedMotion()) return;
-
-  const pass = () => {
-    const direction = Math.random() > 0.5 ? 'left' : 'right';
-    const top = `${15 + Math.random() * 55}%`;
-    playSideShadowPass(direction, top);
-  };
-
-  const schedule = () => {
-    const delay = 6000 + Math.random() * 8000;
-    setTimeout(() => {
-      if (!document.hidden && !isReducedMotion()) pass();
-      schedule();
-    }, delay);
-  };
-
-  setTimeout(schedule, 7000);
-}
-
 function initWebReveals(): void {
   document.querySelectorAll<HTMLElement>('[data-web-reveal]').forEach((web) => {
     const side = web.classList.contains('web-reveal--right') ? 'right' : 'left';
@@ -328,7 +315,7 @@ function initWebReveals(): void {
       scrollTrigger: {
         trigger: triggerEl,
         start: 'top 80%',
-        toggleActions: 'play none none reverse',
+        once: true,
       },
     });
   });
@@ -345,7 +332,7 @@ function initStoryRevealScene(): void {
       scrollTrigger: {
         trigger: entry,
         start: 'top 82%',
-        toggleActions: 'play none none reverse',
+        once: true,
       },
     });
   });
@@ -362,7 +349,7 @@ function initFeaturesScene(): void {
       scrollTrigger: {
         trigger: card,
         start: 'top 88%',
-        toggleActions: 'play none none reverse',
+        once: true,
       },
     });
   });
@@ -380,7 +367,7 @@ function initGalleryScene(): void {
       scrollTrigger: {
         trigger: item,
         start: 'top 90%',
-        toggleActions: 'play none none reverse',
+        once: true,
       },
     });
   });
@@ -398,7 +385,7 @@ function initTestimonialsScene(): void {
       scrollTrigger: {
         trigger: item,
         start: 'top 88%',
-        toggleActions: 'play none none reverse',
+        once: true,
       },
     });
   });
@@ -421,6 +408,14 @@ function initFinalCTAScene(): void {
       onEnter: () => {
         setInReservation(true);
         audioManager.setReservationDuck(true);
+      },
+      onEnterBack: () => {
+        setInReservation(true);
+        audioManager.setReservationDuck(true);
+      },
+      onLeave: () => {
+        setInReservation(false);
+        audioManager.setReservationDuck(false);
       },
       onLeaveBack: () => {
         setInReservation(false);

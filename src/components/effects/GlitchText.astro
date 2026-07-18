@@ -2,15 +2,15 @@
 // GlitchText - Glitch efektli metin
 interface Props {
   text: string;
-  tag?: string;
+  tag?: 'span';
   class?: string;
 }
-const { text, tag: Tag = 'span', class: className = '' } = Astro.props;
+const { text, class: className = '' } = Astro.props;
 ---
 
-<Tag class={`glitch-text ${className}`} data-glitch data-text={text}>
+<span class={`glitch-text ${className}`} data-glitch data-text={text}>
   {text}
-</Tag>
+</span>
 
 <style>
   .glitch-text {

@@ -1,7 +1,7 @@
 import { initScrollScenes, playSideShadowPass } from './animation/scrollScenes';
 import { initGlitchSystem } from './animation/glitch';
 import { initPerformanceMonitor, shuffleArray, randomDelay } from './animation/performance';
-import { isReducedMotion, isLiteMode, initMobilePerfMode, getEffectiveFearLevel } from './scare-engine/ExperienceState';
+import { getPreferences, isReducedMotion, isLiteMode, initMobilePerfMode, getEffectiveFearLevel } from './scare-engine/ExperienceState';
 import { getFearConfig } from './scare-engine/FearLevel';
 import {
   initJumpscareEngine,
@@ -13,7 +13,6 @@ import {
   setHorrorSceneActive,
 } from './scare-engine/JumpscareEngine';
 import { audioManager } from './audio/AudioManager';
-import { bootstrapSoundExperience } from './audio/bootstrapAudio';
 
 declare global {
   interface Window {
@@ -24,14 +23,15 @@ declare global {
 let ambientLoopStarted = false;
 
 function startAmbientShadows(): void {
-  if (ambientLoopStarted || isReducedMotion()) return;
+  if (ambientLoopStarted || isReducedMotion() || isLiteMode() || !document.getElementById('hikaye')) return;
   ambientLoopStarted = true;
 
-  playSideShadowPass('left', '30%');
-  setTimeout(() => playSideShadowPass('right', '45%'), 2000);
+  setTimeout(() => {
+    if (!document.hidden) playSideShadowPass('left', '30%');
+  }, 9000);
 
   const loop = () => {
-    const delay = 12000 + Math.random() * 12000;
+    const delay = 28000 + Math.random() * 18000;
     setTimeout(() => {
       if (!document.hidden && !isReducedMotion()) {
         playSideShadowPass(
@@ -42,7 +42,7 @@ function startAmbientShadows(): void {
       loop();
     }, delay);
   };
-  setTimeout(loop, 8000);
+  setTimeout(loop, 24000);
 }
 
 function initSilhouettes(): void {
@@ -79,24 +79,34 @@ function initBookingJumpscare(): void {
   const overlay = document.getElementById('jumpscare-overlay');
   const imageEl = overlay?.querySelector('.jumpscare__image') as HTMLElement;
   const dismiss = document.getElementById('jumpscare-dismiss');
-  const ctaBook = document.getElementById('jumpscare-cta-book');
+  const bookingButtons = document.querySelectorAll<HTMLAnchorElement>('#jumpscare-cta-book, #jumpscare-quick-book');
   if (!overlay || !imageEl) return;
 
   initJumpscareEngine();
 
   dismiss?.addEventListener('click', () => closeJumpscareOverlay(overlay));
 
-  ctaBook?.addEventListener('click', (event) => {
-    event.preventDefault();
-    closeJumpscareOverlay(overlay);
-    setTimeout(() => scrollToReservation(), 150);
+  bookingButtons.forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      closeJumpscareOverlay(overlay);
+      setTimeout(() => scrollToReservation(), 150);
+    });
   });
 
+  let storySceneActive = false;
+  let retryTimer: number | undefined;
+
   const runScrollScare = async () => {
-    if (scrollJumpscareTriggered || !canTriggerScrollJumpscare()) return;
+    if (scrollJumpscareTriggered || !storySceneActive) return;
+    if (!canTriggerScrollJumpscare()) {
+      window.clearTimeout(retryTimer);
+      retryTimer = window.setTimeout(runScrollScare, 600);
+      return;
+    }
     scrollJumpscareTriggered = true;
 
-    await audioManager.ensureJumpscareReady();
+    void audioManager.ensureJumpscareReady();
     overlay.classList.add('jumpscare--active');
     await runScrollJumpscareSequence(
       overlay,
@@ -109,9 +119,6 @@ function initBookingJumpscare(): void {
   document.querySelectorAll<HTMLAnchorElement>('a[data-jumpscare-booking]').forEach((link) => {
     link.addEventListener('click', (event) => {
       event.preventDefault();
-
-      // Kullanıcı tıklamasıyla ses bağlamını aynı event içinde aç; bekleme ekleme.
-      void bootstrapSoundExperience().catch(() => {});
 
       if (!canTriggerBookingJumpscare()) {
         scrollToReservation();
@@ -133,8 +140,10 @@ function initBookingJumpscare(): void {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          storySceneActive = entry.isIntersecting;
           setHorrorSceneActive(entry.isIntersecting);
-          if (entry.isIntersecting) runScrollScare();
+          if (entry.isIntersecting) void runScrollScare();
+          else window.clearTimeout(retryTimer);
         });
       },
       { threshold: 0.5, rootMargin: '-20% 0px -20% 0px' },
@@ -173,10 +182,9 @@ export function setupHorrorBoot(): void {
 
   window.addEventListener('experience-started', bootHorrorExperience);
 
-  // Gate yok — deneyim hemen başlar
-  bootHorrorExperience();
+  if (getPreferences().gatePassed) bootHorrorExperience();
 
   document.addEventListener('DOMContentLoaded', () => {
-    bootHorrorExperience();
+    if (getPreferences().gatePassed) bootHorrorExperience();
   });
 }

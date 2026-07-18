@@ -15,8 +15,7 @@ export interface JumpscareConditions {
   jumpscareEnabled: boolean;
 }
 
-const MIN_DELAY_MS = 300;
-
+const MIN_DELAY_MS = 6000;
 let siteEntryTime = Date.now();
 let scrollJumpscareShownThisPage = false;
 let jumpscareInProgress = false;
@@ -30,6 +29,10 @@ export function initJumpscareEngine(): void {
   window.addEventListener('experience-prefs-changed', () => updateConditions());
   document.addEventListener('focusin', checkFormFocus);
   document.addEventListener('focusout', checkFormFocus);
+  window.addEventListener('horror-menu-state', (event) => {
+    const { open = false } = (event as CustomEvent<{ open?: boolean }>).detail || {};
+    setMenuOpen(Boolean(open));
+  });
 }
 
 function checkFormFocus(): void {

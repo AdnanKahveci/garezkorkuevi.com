@@ -1,6 +1,7 @@
 import { isLiteMode } from '../scare-engine/ExperienceState';
 import { sampleLibrary } from './SampleLibrary';
 import {
+  startHorrorDrone,
   playJumpscareStinger,
   playHorrorEvent,
   HORROR_EVENTS,
@@ -148,7 +149,9 @@ class AudioManager {
   private setupVisibilityHandler(): void {
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) this.pause();
-      else if (!this.paused) this.resume();
+      else if (this.masterEnabled) {
+        void this.resume().then(() => this.startAmbient());
+      }
     });
   }
 
@@ -157,12 +160,17 @@ class AudioManager {
     const master = this.channels.get('master');
     if (!config || !master) return 0;
     if (!config.enabled || !master.enabled) return 0;
-    let vol = config.volume * master.volume;
+    if (channel === 'master') return master.volume;
+    let vol = config.volume;
     if (this.reservationDuck && channel !== 'jumpscare' && channel !== 'witch') vol *= 0.25;
     return vol;
   }
 
   private updateGain(channel: SoundChannel): void {
+    if (channel === 'master' && this.masterGain && this.ctx) {
+      this.masterGain.gain.setTargetAtTime(this.getChannelVolume('master'), this.ctx.currentTime, 0.08);
+      return;
+    }
     const gain = this.gainNodes.get(channel);
     if (gain && this.ctx) {
       gain.gain.setTargetAtTime(this.getChannelVolume(channel), this.ctx.currentTime, 0.1);
@@ -229,6 +237,13 @@ class AudioManager {
 
     if (stop) {
       this.stopDrone = stop;
+    } else {
+      this.stopDrone = startHorrorDrone({
+        ctx: this.ctx,
+        destination: ambientCtx.destination,
+        volume: ambientCtx.volume * 0.34,
+        lite: this.lite,
+      });
     }
   }
 
@@ -305,7 +320,7 @@ class AudioManager {
       return;
     }
 
-    playHorrorEvent(type, hctx, intense || type === 'witch' || type === 'scream');
+    playHorrorEvent(type, hctx, intense || type === 'scream');
   }
 
   stopAllAmbient(): void {
@@ -326,11 +341,6 @@ class AudioManager {
       await this.ctx.resume();
       this.paused = false;
     }
-  }
-
-  async ensureSoundActive(): Promise<void> {
-    const { bootstrapSoundExperience } = await import('./bootstrapAudio');
-    await bootstrapSoundExperience();
   }
 
   isMasterEnabled(): boolean {

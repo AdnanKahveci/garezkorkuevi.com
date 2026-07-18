@@ -1,49 +1,36 @@
-# Korku Deneyimi — Sinematik Animasyon Sistemi
+# Garez Korku Evi
 
-Etkileşimli korku deneyimi web sitesi. Astro + TypeScript + GSAP ile geliştirilmiştir.
+Astro, TypeScript ve GSAP ile geliştirilen; WhatsApp rezervasyonu, erişilebilir ses tercihleri ve kontrollü korku efektleri içeren statik web sitesi.
 
 ## Kurulum
 
 ```bash
 npm install
-npm run dev
+copy .env.example .env
+npm run dev -- --background
 ```
 
-## Production Build (cPanel)
+`.env` içindeki `PUBLIC_WHATSAPP_NUMBER` değerini gerçek işletme numarasıyla, ülke kodu kullanarak girin (`905xxxxxxxxx`).
+
+İşletme adresi, e-posta, harita, çalışma saatleri ve sosyal hesaplar doğrulandığında `src/config/site.ts` içindeki `BUSINESS` alanını güncelleyip `detailsVerified` değerini `true` yapın. Doğrulanmayan bilgiler yapılandırılmış veriye eklenmez.
+
+## Kalite ve üretim
 
 ```bash
+npm run check
 npm run build
+npm run preview
 ```
 
-`dist/` klasörünün içeriğini cPanel `public_html` klasörüne yükleyin.
-`contact.php` dosyası `public/` altında olduğu için otomatik olarak `dist/` içine kopyalanır.
+`dist/` içeriği statik hosting veya cPanel `public_html` dizinine yüklenebilir. `robots.txt`, XML sitemap, sosyal paylaşım görseli, güvenlik başlıkları ve `llms.txt` derlemeye otomatik eklenir.
 
-## Özellikler
+## Deneyim sistemi
 
-- Sinematik giriş kapısı (ses/sessiz/azaltılmış hareket)
-- El feneri imleci (masaüstü)
-- Örümcek ağları ve hareketli örümcekler
-- Katmanlı sis ve parçacık sistemi
-- Gizli silüetler
-- GSAP ScrollTrigger korku sahneleri
-- Kontrollü jumpscare (oturum başına 1 kez)
-- Web Audio API ortam sesi
-- Glitch ve VHS efektleri
-- Sayfa geçiş animasyonları
-- Korku seviyesi ayarı (Hafif/Normal/Yoğun)
-- PHP iletişim formu
-- Erişilebilirlik kontrolleri
+- İlk kullanıcı hareketinde doğrudan ses başlatma ve Web Audio yedek atmosferi
+- Açık ses/sessiz deneyim ve azaltılmış hareket seçimi
+- Oturum başına en fazla bir kontrollü jumpscare
+- Rezervasyon alanında efekt güvenli bölgesi
+- Masaüstü el feneri, sis, silüet ve kaydırma sahneleri
+- WhatsApp'a isim, kişi sayısı, tarih ve saat aktaran randevu formu
 
-## Yapılandırma
-
-- `public/contact.php` — E-posta adresini güncelleyin
-- `public/audio/` — Production ses dosyalarını ekleyin
-- `public/images/` — Gerçek görsellerle SVG placeholder'ları değiştirin
-
-## Test Senaryoları
-
-Giriş ekranından farklı modları seçerek test edin:
-- Sesli / Sessiz deneyim
-- Hareketleri azalt
-- Korku seviyesi: Hafif / Normal / Yoğun
-- Header'daki ayarlar panelinden jumpscare ve efektleri kapatma
+Geliştirme sunucusunu `npx astro dev stop`, `npx astro dev status` ve `npx astro dev logs` komutlarıyla yönetebilirsiniz.
