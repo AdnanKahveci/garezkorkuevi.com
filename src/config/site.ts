@@ -22,8 +22,8 @@ export const SITE = {
 /**
  * İşletme bilgileri. detailsVerified true iken adres/telefon şema ve arayüzde görünür.
  */
-const MAP_QUERY =
-  'Cevizli Mah. Bağdat Cad. Güvenli Sk. No:2 Daire:8 34844 Maltepe İstanbul';
+/** Google Haritalar arama sorgusu (daire no vb. eklenmez; Maps bulamayabiliyor) */
+const MAP_QUERY = 'Güvenli Sokak No:2, Cevizli, Maltepe, İstanbul';
 
 export const BUSINESS = {
   city: 'İstanbul',
@@ -39,7 +39,7 @@ export const BUSINESS = {
   /** Google Haritalar yol tarifi */
   directionsUrl: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(MAP_QUERY)}`,
   /** Sayfada gömülü harita */
-  mapEmbedUrl: `https://www.google.com/maps?q=${encodeURIComponent(MAP_QUERY)}&hl=tr&z=16&output=embed`,
+  mapEmbedUrl: `https://www.google.com/maps?q=${encodeURIComponent(MAP_QUERY)}&hl=tr&z=17&output=embed`,
   instagramUrl: '',
   detailsVerified: true,
 } as const;
