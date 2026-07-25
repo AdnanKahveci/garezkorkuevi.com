@@ -22,6 +22,9 @@ export const SITE = {
 /**
  * İşletme bilgileri. detailsVerified true iken adres/telefon şema ve arayüzde görünür.
  */
+const MAP_QUERY =
+  'Cevizli Mah. Bağdat Cad. Güvenli Sk. No:2 Daire:8 34844 Maltepe İstanbul';
+
 export const BUSINESS = {
   city: 'İstanbul',
   district: 'Maltepe',
@@ -31,8 +34,12 @@ export const BUSINESS = {
   phoneE164: '905455042739',
   email: '',
   openingHours: '',
-  mapUrl:
-    'https://www.google.com/maps/search/?api=1&query=Cevizli+Mah.+Ba%C4%9Fdat+Cad.+G%C3%BCvenli+Sk.+No:2+Daire:8+34844+Maltepe+%C4%B0stanbul',
+  /** Google Haritalar konum sayfası */
+  mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(MAP_QUERY)}`,
+  /** Google Haritalar yol tarifi */
+  directionsUrl: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(MAP_QUERY)}`,
+  /** Sayfada gömülü harita */
+  mapEmbedUrl: `https://maps.google.com/maps?q=${encodeURIComponent(MAP_QUERY)}&z=16&output=embed`,
   instagramUrl: '',
   detailsVerified: true,
 } as const;

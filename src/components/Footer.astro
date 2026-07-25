@@ -26,6 +26,7 @@ const year = new Date().getFullYear();
         <a href="/#oyun">Oyun</a>
         <a href="/galeri/">Galeri</a>
         <a href="/#sss">Sık Sorulanlar</a>
+        <a href="/#iletisim">İletişim</a>
       </nav>
     </div>
     <div>
@@ -36,7 +37,10 @@ const year = new Date().getFullYear();
           <a href={`tel:+${BUSINESS.phoneE164}`}>{BUSINESS.phoneDisplay}</a>
         )}
         {BUSINESS.detailsVerified && BUSINESS.mapUrl && (
-          <a href={BUSINESS.mapUrl} target="_blank" rel="noopener noreferrer">Konum / Harita</a>
+          <a href={BUSINESS.mapUrl} target="_blank" rel="noopener noreferrer">Google Haritalar</a>
+        )}
+        {BUSINESS.detailsVerified && BUSINESS.directionsUrl && (
+          <a href={BUSINESS.directionsUrl} target="_blank" rel="noopener noreferrer">Yol Tarifi</a>
         )}
         {BUSINESS.detailsVerified && BUSINESS.email && <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>}
         {BUSINESS.detailsVerified && BUSINESS.streetAddress && <span>{BUSINESS_ADDRESS}</span>}

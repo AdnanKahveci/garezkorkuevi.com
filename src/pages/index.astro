@@ -237,12 +237,24 @@ const homeStructuredData = [
     </div>
   </section>
 
-  <section class="section section--location" id="iletisim">
+  <section class="section section--location" id="iletisim" data-safe-zone="contact">
     <div class="location-card">
-      <div class="location-card__visual" aria-hidden="true">
-        <span class="location-card__pulse"></span>
-        <span class="location-card__pin"><b>G</b></span>
-        <p>{BUSINESS.detailsVerified && BUSINESS.district ? String(BUSINESS.district).toLocaleUpperCase('tr-TR') : 'GİZLİ KONUM'} // GAREZ</p>
+      <div class="location-card__map">
+        {BUSINESS.detailsVerified && BUSINESS.mapEmbedUrl ? (
+          <iframe
+            title="Garez Korku Evi Google Haritalar konumu"
+            src={BUSINESS.mapEmbedUrl}
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        ) : (
+          <div class="location-card__visual" aria-hidden="true">
+            <span class="location-card__pulse"></span>
+            <span class="location-card__pin"><b>G</b></span>
+            <p>GİZLİ KONUM // GAREZ</p>
+          </div>
+        )}
       </div>
       <div class="location-card__content">
         <p class="section-kicker">İLETİŞİM / 07</p>
@@ -254,7 +266,10 @@ const homeStructuredData = [
         </p>
         <div class="location-card__links">
           {BUSINESS.detailsVerified && BUSINESS.mapUrl && (
-            <a href={BUSINESS.mapUrl} target="_blank" rel="noopener noreferrer">Haritalarda Aç <span>↗</span></a>
+            <a href={BUSINESS.mapUrl} target="_blank" rel="noopener noreferrer">Google Haritalar <span>↗</span></a>
+          )}
+          {BUSINESS.detailsVerified && BUSINESS.directionsUrl && (
+            <a href={BUSINESS.directionsUrl} target="_blank" rel="noopener noreferrer">Yol Tarifi Al <span>↗</span></a>
           )}
           {BUSINESS.detailsVerified && BUSINESS.phoneDisplay && (
             <a href={`tel:+${BUSINESS.phoneE164}`}>{BUSINESS.phoneDisplay} <span>↗</span></a>

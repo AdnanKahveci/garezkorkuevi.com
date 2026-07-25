@@ -124,7 +124,7 @@ function resetOverlayState(overlay: HTMLElement): void {
   overlay.querySelectorAll('.jumpscare__shadow').forEach((s) => s.classList.remove('jumpscare__shadow--active'));
   overlay.querySelector('.jumpscare__image')?.classList.remove('jumpscare__image--visible', 'jumpscare__image--glitch', 'jumpscare__image--spotlight');
   const scream = overlay.querySelector('.jumpscare__scream') as HTMLElement | null;
-  if (scream) scream.textContent = 'BORCUN HAZIR...';
+  if (scream) scream.textContent = 'GERİ DÖNÜŞ YOK...';
   const cta = overlay.querySelector('.jumpscare__cta') as HTMLElement;
   if (cta) {
     cta.classList.remove('jumpscare__cta--visible');
@@ -169,7 +169,7 @@ export async function runScrollJumpscareSequence(
   flash?.classList.add('jumpscare__flash--on');
 
   // Yüz + ses aynı anda — gecikmesiz vuruş
-  setScreamText(overlay, 'BORCUN HAZIR...');
+  setScreamText(overlay, 'GERİ DÖNÜŞ YOK...');
   overlay.classList.add('jumpscare--spotlight');
   imageEl.classList.add('jumpscare__image--visible', 'jumpscare__image--glitch');
   shadowLeft?.classList.add('jumpscare__shadow--active');
