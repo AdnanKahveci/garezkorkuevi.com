@@ -5,7 +5,7 @@ import GlitchText from '@/components/effects/GlitchText.astro';
 import SectionWebReveal from '@/components/effects/SectionWebReveal.astro';
 import ContactForm from '@/components/ContactForm.astro';
 import { WHATSAPP_URL } from '@/config/contact';
-import { BUSINESS, EXPERIENCE, SITE } from '@/config/site';
+import { BUSINESS, BUSINESS_ADDRESS, EXPERIENCE, SITE } from '@/config/site';
 
 const stories = [
   { id: '001', title: 'İlk Garez', date: '14.03.1987', text: 'Evin eski sahibi, bodrumdaki kapıyı kendi elleriyle mühürledi. Anahtar hiçbir zaman bulunamadı.' },
@@ -242,13 +242,23 @@ const homeStructuredData = [
       <div class="location-card__visual" aria-hidden="true">
         <span class="location-card__pulse"></span>
         <span class="location-card__pin"><b>G</b></span>
-        <p>{BUSINESS.detailsVerified && BUSINESS.city ? String(BUSINESS.city).toLocaleUpperCase('tr-TR') : 'GİZLİ KONUM'} // GAREZ</p>
+        <p>{BUSINESS.detailsVerified && BUSINESS.district ? String(BUSINESS.district).toLocaleUpperCase('tr-TR') : 'GİZLİ KONUM'} // GAREZ</p>
       </div>
       <div class="location-card__content">
         <p class="section-kicker">İLETİŞİM / 07</p>
         <h2 class="section__title">Kapıyı<br /><em>bul.</em></h2>
-        <p>Güncel konum, müsait seans ve katılım detayları rezervasyon talebinin ardından ekibimiz tarafından paylaşılır.</p>
+        <p>
+          {BUSINESS.detailsVerified
+            ? BUSINESS_ADDRESS
+            : 'Güncel konum, müsait seans ve katılım detayları rezervasyon talebinin ardından ekibimiz tarafından paylaşılır.'}
+        </p>
         <div class="location-card__links">
+          {BUSINESS.detailsVerified && BUSINESS.mapUrl && (
+            <a href={BUSINESS.mapUrl} target="_blank" rel="noopener noreferrer">Haritalarda Aç <span>↗</span></a>
+          )}
+          {BUSINESS.detailsVerified && BUSINESS.phoneDisplay && (
+            <a href={`tel:+${BUSINESS.phoneE164}`}>{BUSINESS.phoneDisplay} <span>↗</span></a>
+          )}
           <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp <span>↗</span></a>
           {BUSINESS.detailsVerified && BUSINESS.email && (
             <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email} <span>↗</span></a>

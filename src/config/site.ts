@@ -20,22 +20,28 @@ export const SITE = {
 } as const;
 
 /**
- * İşletme bilgileri kesinleştiğinde bu alanları gerçek verilerle güncelleyin.
- * Doğrulanmamış adres/telefon LocalBusiness şemasına eklenmez.
+ * İşletme bilgileri. detailsVerified true iken adres/telefon şema ve arayüzde görünür.
  */
 export const BUSINESS = {
-  city: '',
-  district: '',
-  streetAddress: '',
-  postalCode: '',
-  phoneDisplay: '',
-  phoneE164: '',
+  city: 'İstanbul',
+  district: 'Maltepe',
+  streetAddress: 'Cevizli Mah. Bağdat Cad., Güvenli Sk. No:2 Daire: 8',
+  postalCode: '34844',
+  phoneDisplay: '0545 504 27 39',
+  phoneE164: '905455042739',
   email: '',
   openingHours: '',
-  mapUrl: '',
+  mapUrl:
+    'https://www.google.com/maps/search/?api=1&query=Cevizli+Mah.+Ba%C4%9Fdat+Cad.+G%C3%BCvenli+Sk.+No:2+Daire:8+34844+Maltepe+%C4%B0stanbul',
   instagramUrl: '',
-  detailsVerified: false,
+  detailsVerified: true,
 } as const;
+
+/** Tek satırda görünen tam adres */
+export const BUSINESS_ADDRESS = [
+  BUSINESS.streetAddress,
+  `${BUSINESS.postalCode} ${BUSINESS.district}/${BUSINESS.city}`,
+].join(', ');
 
 export const EXPERIENCE = {
   minGuests: 2,

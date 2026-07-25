@@ -1,6 +1,6 @@
 ---
 import { WHATSAPP_URL } from '@/config/contact';
-import { BUSINESS, SITE } from '@/config/site';
+import { BUSINESS, BUSINESS_ADDRESS, SITE } from '@/config/site';
 
 const year = new Date().getFullYear();
 ---
@@ -32,8 +32,14 @@ const year = new Date().getFullYear();
       <p class="site-footer__label">İLETİŞİM</p>
       <div class="site-footer__nav">
         <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        {BUSINESS.detailsVerified && BUSINESS.phoneDisplay && (
+          <a href={`tel:+${BUSINESS.phoneE164}`}>{BUSINESS.phoneDisplay}</a>
+        )}
+        {BUSINESS.detailsVerified && BUSINESS.mapUrl && (
+          <a href={BUSINESS.mapUrl} target="_blank" rel="noopener noreferrer">Konum / Harita</a>
+        )}
         {BUSINESS.detailsVerified && BUSINESS.email && <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>}
-        {BUSINESS.detailsVerified && BUSINESS.city && <span>{BUSINESS.city}</span>}
+        {BUSINESS.detailsVerified && BUSINESS.streetAddress && <span>{BUSINESS_ADDRESS}</span>}
       </div>
     </div>
     <div class="site-footer__reserve">
