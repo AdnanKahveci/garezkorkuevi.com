@@ -1,5 +1,8 @@
 name = "garezkorkuevicom"
 compatibility_date = "2026-07-16"
+main = "src/worker.ts"
 
 [assets]
 directory = "./dist"
+binding = "ASSETS"
+run_worker_first = true
