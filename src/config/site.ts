@@ -39,7 +39,7 @@ export const BUSINESS = {
   /** Google Haritalar yol tarifi */
   directionsUrl: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(MAP_QUERY)}`,
   /** Sayfada gömülü harita */
-  mapEmbedUrl: `https://maps.google.com/maps?q=${encodeURIComponent(MAP_QUERY)}&z=16&output=embed`,
+  mapEmbedUrl: `https://www.google.com/maps?q=${encodeURIComponent(MAP_QUERY)}&hl=tr&z=16&output=embed`,
   instagramUrl: '',
   detailsVerified: true,
 } as const;
