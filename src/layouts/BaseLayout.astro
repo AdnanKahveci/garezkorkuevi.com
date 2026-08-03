@@ -8,6 +8,7 @@ import AtmosphereOverlay from '@/components/effects/AtmosphereOverlay.astro';
 import SidePassShadow from '@/components/effects/SidePassShadow.astro';
 import ExperienceGate from '@/components/effects/ExperienceGate.astro';
 import { BUSINESS, SITE } from '@/config/site';
+import { GOOGLE_ADS } from '@/config/analytics';
 
 interface Props {
   title?: string;
@@ -78,6 +79,14 @@ const jsonLd = [...baseStructuredData, ...pageStructuredData];
 <html lang={SITE.language}>
   <head>
     <meta charset="UTF-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS.id}`}></script>
+    <script is:inline define:vars={{ adsId: GOOGLE_ADS.id }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', adsId);
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#090706" />
     <meta name="color-scheme" content="dark" />
@@ -140,6 +149,11 @@ const jsonLd = [...baseStructuredData, ...pageStructuredData];
       <slot />
     </main>
     <Footer />
+
+    <script>
+      import { initGoogleAdsClickTracking } from '@/lib/analytics/initTracking';
+      initGoogleAdsClickTracking();
+    </script>
 
     <script>
       let horrorLoadStarted = false;

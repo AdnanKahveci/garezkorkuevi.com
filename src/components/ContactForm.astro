@@ -51,6 +51,7 @@ const timeOptions = ['18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
 
 <script>
   import { buildReservationWhatsAppUrl } from '@/config/contact';
+  import { trackReservationSubmit } from '@/lib/analytics/googleAds';
 
   const form = document.getElementById('HomeFormReservation') as HTMLFormElement | null;
   const status = document.getElementById('reservation-status');
@@ -82,6 +83,7 @@ const timeOptions = ['18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
     };
 
     const url = buildReservationWhatsAppUrl(details);
+    trackReservationSubmit({ guests: details.guests });
     const popup = window.open(url, '_blank', 'noopener,noreferrer');
     if (!popup) window.location.href = url;
 
