@@ -8,7 +8,7 @@ import AtmosphereOverlay from '@/components/effects/AtmosphereOverlay.astro';
 import SidePassShadow from '@/components/effects/SidePassShadow.astro';
 import ExperienceGate from '@/components/effects/ExperienceGate.astro';
 import { BUSINESS, SITE } from '@/config/site';
-import { GOOGLE_ADS } from '@/config/analytics';
+import { GOOGLE_ADS, GTM } from '@/config/analytics';
 
 interface Props {
   title?: string;
@@ -79,6 +79,15 @@ const jsonLd = [...baseStructuredData, ...pageStructuredData];
 <html lang={SITE.language}>
   <head>
     <meta charset="UTF-8" />
+    <!-- Google Tag Manager -->
+    <script is:inline define:vars={{ gtmId: GTM.id }}>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer',gtmId);
+    </script>
+    <!-- End Google Tag Manager -->
     <!-- Google tag (gtag.js) -->
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS.id}`}></script>
     <script is:inline define:vars={{ adsId: GOOGLE_ADS.id }}>
@@ -125,6 +134,11 @@ const jsonLd = [...baseStructuredData, ...pageStructuredData];
     <title>{title}</title>
   </head>
   <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+      <iframe src={`https://www.googletagmanager.com/ns.html?id=${GTM.id}`} height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <a class="skip-link" href="#main-content">İçeriğe geç</a>
     <ExperienceGate />
     <AtmosphereOverlay />

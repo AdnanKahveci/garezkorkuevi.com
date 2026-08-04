@@ -1,3 +1,8 @@
+/** Google Tag Manager */
+export const GTM = {
+  id: 'GTM-TWHHZ6TK',
+} as const;
+
 /** Google Ads — dönüşüm etiketleri panelden alınır (AW-XXXX/etiket formatında etiket kısmı). */
 export const GOOGLE_ADS = {
   id: 'AW-18368375911',
