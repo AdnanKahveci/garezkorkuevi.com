@@ -6,9 +6,10 @@ function gtagSafe(...args: unknown[]) {
 
 function sendConversion(key: GoogleAdsConversionKey, eventName: string, params?: Record<string, unknown>) {
   const label = GOOGLE_ADS.conversions[key];
-  if (label) {
-    gtagSafe('event', 'conversion', { send_to: `${GOOGLE_ADS.id}/${label}`, ...params });
-  }
+  gtagSafe('event', 'conversion', {
+    send_to: label ? `${GOOGLE_ADS.id}/${label}` : GOOGLE_ADS.conversionSendTo,
+    ...params,
+  });
   gtagSafe('event', eventName, { event_category: 'lead', ...params });
 }
 

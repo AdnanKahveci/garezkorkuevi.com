@@ -5,8 +5,9 @@ export const GTM = {
 
 /** Google Ads — dönüşüm etiketleri panelden alınır (AW-XXXX/etiket formatında etiket kısmı). */
 export const GOOGLE_ADS = {
-  id: 'AW-18368375911',
-  /** Boş bırakılırsa olay adı gönderilir; etiket eklenince dönüşüm sayılır. */
+  id: 'AW-18382386124',
+  conversionSendTo: 'AW-18382386124/KgZVCMaTnOAcEMzns71E',
+  /** Boş bırakılırsa yalnızca conversionSendTo kullanılır. */
   conversions: {
     whatsapp: import.meta.env.PUBLIC_GADS_CONV_WHATSAPP || '',
     reservation: import.meta.env.PUBLIC_GADS_CONV_RESERVATION || '',
