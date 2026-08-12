@@ -1,34 +1,31 @@
-import { GOOGLE_ADS, type GoogleAdsConversionKey } from '@/config/analytics';
+import { GOOGLE_ADS } from '@/config/analytics';
 
 function gtagSafe(...args: unknown[]) {
   if (typeof window.gtag === 'function') window.gtag(...args);
 }
 
-function sendConversion(key: GoogleAdsConversionKey, eventName: string, params?: Record<string, unknown>) {
-  const label = GOOGLE_ADS.conversions[key];
+/** Google Ads lead dönüşümü: AW-18382386124/KgZVCMaTnOAcEMzns71E */
+export function trackGoogleAdsLeadConversion(source?: string) {
   gtagSafe('event', 'conversion', {
-    send_to: label ? `${GOOGLE_ADS.id}/${label}` : GOOGLE_ADS.conversionSendTo,
-    ...params,
+    send_to: GOOGLE_ADS.conversionSendTo,
   });
-  gtagSafe('event', eventName, { event_category: 'lead', ...params });
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'google_ads_lead',
+    gads_conversion_send_to: GOOGLE_ADS.conversionSendTo,
+    ...(source ? { lead_source: source } : {}),
+  });
 }
 
 export function trackWhatsAppClick(source?: string) {
-  sendConversion('whatsapp', 'whatsapp_click', { event_label: source || 'link' });
-}
-
-export function trackPhoneCall() {
-  sendConversion('phone', 'phone_call');
+  trackGoogleAdsLeadConversion(source ? `whatsapp:${source}` : 'whatsapp');
 }
 
 export function trackBookingCtaClick(source?: string) {
-  sendConversion('bookingCta', 'booking_cta_click', { event_label: source || 'cta' });
+  trackGoogleAdsLeadConversion(source ? `booking:${source}` : 'booking');
 }
 
-export function trackReservationSubmit(details?: { guests?: string }) {
-  sendConversion('reservation', 'reservation_submit', {
-    event_label: 'form',
-    ...(details?.guests ? { value: Number(details.guests) } : {}),
-  });
-  gtagSafe('event', 'generate_lead', { event_category: 'lead', event_label: 'reservation_form' });
+export function trackReservationSubmit() {
+  trackGoogleAdsLeadConversion('reservation_form');
 }
