@@ -1,0 +1,43 @@
+---
+// HiddenSilhouette - Gizli silüet efekti (init: initHorrorExperience.ts)
+interface Props {
+  src?: string;
+  position?: string;
+}
+const { src = '/images/jumpscare/garez-yuz.png', position = 'center' } = Astro.props;
+---
+
+<div
+  class={`hidden-silhouette hidden-silhouette--${position}`}
+  data-silhouette
+  aria-hidden="true"
+>
+  <img src={src} alt="" loading="lazy" decoding="async" class="hidden-silhouette__img" />
+</div>
+
+<style>
+  .hidden-silhouette {
+    position: absolute;
+    pointer-events: none;
+    z-index: 4;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .hidden-silhouette--visible {
+    opacity: 0.85;
+    animation: silhouetteFlicker 0.15s ease 2;
+  }
+  .hidden-silhouette--center { top: 30%; left: 50%; transform: translateX(-50%); }
+  .hidden-silhouette--left { top: 40%; left: 5%; }
+  .hidden-silhouette--right { top: 35%; right: 5%; }
+  .hidden-silhouette__img {
+    width: 140px;
+    height: auto;
+    filter: drop-shadow(0 0 16px rgba(180, 0, 0, 0.7)) contrast(1.15) brightness(1.05);
+  }
+  @keyframes silhouetteFlicker {
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 0.25; }
+  }
+  body.reduced-motion-active .hidden-silhouette { display: none !important; }
+</style>

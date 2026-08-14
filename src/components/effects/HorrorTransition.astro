@@ -1,0 +1,80 @@
+---
+// HorrorTransition - Sayfa geçiş efekti
+---
+
+<div id="horror-transition" class="horror-transition" aria-hidden="true">
+  <div class="horror-transition__left"></div>
+  <div class="horror-transition__right"></div>
+</div>
+
+<script>
+  import { isReducedMotion } from '@/lib/scare-engine/ExperienceState';
+
+  function initTransitions() {
+    const overlay = document.getElementById('horror-transition');
+    if (!overlay) return;
+
+    document.querySelectorAll('a[data-transition]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('http') || href.startsWith('#') || link.hasAttribute('target')) return;
+
+        // /#bolum → sayfa içi veya ana sayfa bölümü; geçiş animasyonu yok
+        if (href.startsWith('/#')) return;
+
+        e.preventDefault();
+        const reduced = isReducedMotion();
+        overlay.classList.add('horror-transition--active');
+        if (reduced) overlay.classList.add('horror-transition--fade');
+
+        setTimeout(() => {
+          window.location.href = href;
+        }, reduced ? 300 : 700);
+      });
+    });
+  }
+
+  initTransitions();
+</script>
+
+<style>
+  .horror-transition {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    display: flex;
+    visibility: hidden;
+  }
+  .horror-transition--active {
+    visibility: visible;
+  }
+  .horror-transition__left,
+  .horror-transition__right {
+    flex: 1;
+    background: #0a0a0a;
+    transform: scaleX(0);
+    opacity: 0;
+    transition: none;
+  }
+  .horror-transition__left { transform-origin: left center; }
+  .horror-transition__right { transform-origin: right center; }
+  .horror-transition--active .horror-transition__left,
+  .horror-transition--active .horror-transition__right {
+    transform: scaleX(1);
+    opacity: 1;
+    transition: transform 0.35s ease-in, opacity 0.35s ease-in;
+  }
+  .horror-transition--fade .horror-transition__left,
+  .horror-transition--fade .horror-transition__right {
+    transform: scaleX(1);
+    transition: opacity 0.3s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .horror-transition--active .horror-transition__left,
+    .horror-transition--active .horror-transition__right {
+      transform: scaleX(1);
+      transition: opacity 0.3s ease;
+    }
+  }
+</style>

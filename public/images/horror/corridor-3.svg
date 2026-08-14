@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#0a0a0a"/>
+  <path d="M0,300 L200,50 L400,300" fill="#141414"/>
+  <rect x="180" y="200" width="40" height="80" fill="#1a1a1a"/>
+  <text x="200" y="180" text-anchor="middle" fill="#333" font-size="10" font-family="monospace">�IKI^</text>
+</svg>

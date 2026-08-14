@@ -1,0 +1,83 @@
+---
+// FearLevelSelector - Korku seviyesi ayarı
+import { FEAR_LEVEL_LABELS } from '@/lib/scare-engine/FearLevel';
+import type { FearLevel } from '@/lib/scare-engine/ExperienceState';
+---
+
+<div class="fear-level" id="fear-level-selector">
+  <span class="fear-level__label">Korku Seviyesi:</span>
+  <div class="fear-level__options" role="radiogroup" aria-label="Korku seviyesi seçimi">
+    {(Object.keys(FEAR_LEVEL_LABELS) as FearLevel[]).map((level) => (
+      <button
+        type="button"
+        class="fear-level__btn"
+        data-level={level}
+        role="radio"
+        aria-checked="false"
+      >
+        {FEAR_LEVEL_LABELS[level]}
+      </button>
+    ))}
+  </div>
+</div>
+
+<script>
+  import { getPreferences, savePreferences } from '@/lib/scare-engine/ExperienceState';
+  import type { FearLevel } from '@/lib/scare-engine/ExperienceState';
+
+  function initFearLevel() {
+    const container = document.getElementById('fear-level-selector');
+    if (!container) return;
+
+    const prefs = getPreferences();
+    updateUI(prefs.fearLevel);
+
+    container.querySelectorAll('[data-level]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const level = btn.getAttribute('data-level') as FearLevel;
+        savePreferences({ fearLevel: level });
+        updateUI(level);
+      });
+    });
+  }
+
+  function updateUI(active: FearLevel) {
+    document.querySelectorAll('[data-level]').forEach((btn) => {
+      const level = btn.getAttribute('data-level');
+      btn.classList.toggle('fear-level__btn--active', level === active);
+      btn.setAttribute('aria-checked', String(level === active));
+    });
+  }
+
+  initFearLevel();
+</script>
+
+<style>
+  .fear-level {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+  }
+  .fear-level__label { color: #888; white-space: nowrap; }
+  .fear-level__options { display: flex; gap: 0.25rem; }
+  .fear-level__btn {
+    padding: 0.3rem 0.6rem;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #999;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+  }
+  .fear-level__btn--active {
+    background: #8b0000;
+    border-color: #8b0000;
+    color: #fff;
+  }
+  .fear-level__btn:hover { border-color: #666; }
+  @media (max-width: 768px) {
+    .fear-level__label { display: none; }
+  }
+</style>

@@ -1,0 +1,140 @@
+---
+// MotionPreferences - Erişilebilirlik kontrolleri
+---
+
+<div class="motion-prefs" id="motion-prefs">
+  <button type="button" class="motion-prefs__toggle" id="prefs-toggle" aria-label="Deneyim ayarları" aria-expanded="false">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+    </svg>
+  </button>
+  <div class="motion-prefs__panel" id="prefs-panel" hidden>
+    <h3 class="motion-prefs__title">Deneyim Ayarları</h3>
+    <label class="motion-prefs__option">
+      <input type="checkbox" id="pref-reduce-motion" />
+      Animasyonları azalt
+    </label>
+    <label class="motion-prefs__option">
+      <input type="checkbox" id="pref-disable-horror" />
+      Korku efektlerini kapat
+    </label>
+    <label class="motion-prefs__option">
+      <input type="checkbox" id="pref-disable-jumpscare" />
+      Jumpscare modunu kapat
+    </label>
+    <button type="button" class="motion-prefs__reset" id="pref-reset">
+      Deneyimi yeniden başlat
+    </button>
+  </div>
+</div>
+
+<script>
+  import { getPreferences, savePreferences, resetExperience } from '@/lib/scare-engine/ExperienceState';
+  import { audioManager } from '@/lib/audio/AudioManager';
+
+  function initMotionPrefs() {
+    const toggle = document.getElementById('prefs-toggle');
+    const panel = document.getElementById('prefs-panel');
+    const reduceMotion = document.getElementById('pref-reduce-motion') as HTMLInputElement;
+    const disableHorror = document.getElementById('pref-disable-horror') as HTMLInputElement;
+    const disableJumpscare = document.getElementById('pref-disable-jumpscare') as HTMLInputElement;
+    const resetBtn = document.getElementById('pref-reset');
+
+    if (!toggle || !panel) return;
+
+    const prefs = getPreferences();
+    reduceMotion.checked = prefs.motion === 'reduced';
+    disableHorror.checked = !prefs.horrorEffectsEnabled;
+    disableJumpscare.checked = !prefs.jumpscareEnabled;
+
+    toggle.addEventListener('click', () => {
+      const open = panel.hidden;
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+
+    reduceMotion.addEventListener('change', () => {
+      savePreferences({ motion: reduceMotion.checked ? 'reduced' : 'full' });
+      if (reduceMotion.checked) document.body.classList.add('reduced-motion-active');
+      else document.body.classList.remove('reduced-motion-active');
+    });
+
+    disableHorror.addEventListener('change', () => {
+      savePreferences({ horrorEffectsEnabled: !disableHorror.checked });
+    });
+
+    disableJumpscare.addEventListener('change', () => {
+      savePreferences({ jumpscareEnabled: !disableJumpscare.checked });
+    });
+
+    resetBtn?.addEventListener('click', () => {
+      audioManager.destroy();
+      resetExperience();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!panel.contains(e.target as Node) && e.target !== toggle) {
+        panel.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  initMotionPrefs();
+</script>
+
+<style>
+  .motion-prefs { position: relative; }
+  .motion-prefs__toggle {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #ccc;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .motion-prefs__toggle:hover { border-color: #c41e1e; }
+  .motion-prefs__panel {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 1rem;
+    min-width: 220px;
+    z-index: 200;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .motion-prefs__title {
+    font-size: 0.85rem;
+    color: #ccc;
+    margin-bottom: 0.75rem;
+  }
+  .motion-prefs__option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+  }
+  .motion-prefs__option input { accent-color: #8b0000; }
+  .motion-prefs__reset {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: #333;
+    border: 1px solid #444;
+    color: #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .motion-prefs__reset:hover { background: #444; }
+</style>

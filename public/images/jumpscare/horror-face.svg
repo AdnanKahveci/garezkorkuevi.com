@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 560">
+  <defs>
+    <radialGradient id="skin" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#c4b8a8"/>
+      <stop offset="55%" stop-color="#8a7d72"/>
+      <stop offset="100%" stop-color="#4a4038"/>
+    </radialGradient>
+    <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff4444"/>
+      <stop offset="40%" stop-color="#cc0000"/>
+      <stop offset="100%" stop-color="#330000"/>
+    </radialGradient>
+    <filter id="faceShadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.8"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="20" flood-color="#ff0000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Head -->
+  <ellipse cx="250" cy="230" rx="130" ry="155" fill="url(#skin)" filter="url(#faceShadow)"/>
+
+  <!-- Hair -->
+  <path d="M120,200 Q130,80 250,70 Q370,80 380,200 Q350,120 250,110 Q150,120 120,200" fill="#1a1510"/>
+
+  <!-- Eye sockets -->
+  <ellipse cx="195" cy="215" rx="42" ry="48" fill="#1a1010"/>
+  <ellipse cx="305" cy="215" rx="42" ry="48" fill="#1a1010"/>
+
+  <!-- Glowing eyes -->
+  <circle cx="195" cy="215" r="28" fill="url(#eyeGlow)" class="horror-eye"/>
+  <circle cx="305" cy="215" r="28" fill="url(#eyeGlow)" class="horror-eye"/>
+  <circle cx="188" cy="208" r="8" fill="#fff" opacity="0.9"/>
+  <circle cx="298" cy="208" r="8" fill="#fff" opacity="0.9"/>
+  <circle cx="200" cy="220" r="4" fill="#000"/>
+  <circle cx="310" cy="220" r="4" fill="#000"/>
+
+  <!-- Nose -->
+  <path d="M250,240 L235,290 L250,285 L265,290 Z" fill="#6a5d52" opacity="0.7"/>
+
+  <!-- Mouth - open scream -->
+  <ellipse cx="250" cy="340" rx="55" ry="40" fill="#0a0505"/>
+  <ellipse cx="250" cy="335" rx="48" ry="30" fill="#1a0808"/>
+  <!-- Teeth top -->
+  <path d="M205,320 L215,345 L225,318 L235,346 L245,317 L255,347 L265,318 L275,345 L285,320 L295,346" fill="none" stroke="#e8e0d0" stroke-width="5" stroke-linecap="round"/>
+  <!-- Teeth bottom -->
+  <path d="M215,355 L225,370 L240,352 L250,375 L260,352 L275,370 L285,355" fill="none" stroke="#d8d0c0" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Blood -->
+  <path d="M195,265 Q192,310 188,350" fill="none" stroke="#aa0000" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
+  <path d="M305,262 Q308,305 312,345" fill="none" stroke="#aa0000" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
+  <ellipse cx="175" cy="280" rx="8" ry="12" fill="#8b0000" opacity="0.7"/>
+  <ellipse cx="325" cy="275" rx="6" ry="10" fill="#8b0000" opacity="0.6"/>
+
+  <!-- Scratches on face -->
+  <line x1="140" y1="180" x2="175" y2="260" stroke="#5a3020" stroke-width="3" opacity="0.5"/>
+  <line x1="360" y1="170" x2="330" y2="250" stroke="#5a3020" stroke-width="3" opacity="0.5"/>
+  <line x1="155" y1="300" x2="190" y2="320" stroke="#6a2020" stroke-width="2" opacity="0.4"/>
+</svg>

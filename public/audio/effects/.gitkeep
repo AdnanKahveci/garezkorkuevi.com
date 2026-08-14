@@ -1,0 +1,12 @@
+# Sound effect files
+# Aktif dosyalar:
+# - horror-sound-3.mp3                        → arka plan döngüsü
+# - freesound_community-evil-laugh-89423.mp3  → cadı gülüşü
+# - preview.mp3                               → jumpscare sting
+#
+# İsteğe bağlı ek dosyalar:
+# - door-groan.mp3
+# - metal-clang.mp3
+# - heartbeat.mp3
+# - thunder.mp3
+# - ambient-drone.mp3  (ambient/ klasörüne)

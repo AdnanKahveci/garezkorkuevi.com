@@ -1,0 +1,129 @@
+---
+// AmbientMotion - Sayfa genelinde sürekli çalışan CSS animasyonları (GSAP'siz)
+---
+
+<div class="ambient-motion" aria-hidden="true">
+  <div class="ambient-motion__orb ambient-motion__orb--1"></div>
+  <div class="ambient-motion__orb ambient-motion__orb--2"></div>
+  <div class="ambient-motion__orb ambient-motion__orb--3"></div>
+  <div class="ambient-motion__sweep ambient-motion__sweep--left"></div>
+  <div class="ambient-motion__sweep ambient-motion__sweep--right"></div>
+</div>
+
+<script>
+  import { isReducedMotion } from '@/lib/scare-engine/ExperienceState';
+  import { playSideShadowPass } from '@/lib/animation/scrollScenes';
+
+  function startAmbientMotion() {
+    if (isReducedMotion()) return;
+
+    // Periyodik gölge geçişleri — gate sonrası hemen başla
+    setTimeout(() => playSideShadowPass('left', '25%'), 1500);
+    setTimeout(() => playSideShadowPass('right', '50%'), 3500);
+
+    const loop = () => {
+      const delay = 5000 + Math.random() * 6000;
+      setTimeout(() => {
+        if (!document.hidden && !isReducedMotion()) {
+          playSideShadowPass(
+            Math.random() > 0.5 ? 'left' : 'right',
+            `${20 + Math.random() * 50}%`
+          );
+        }
+        loop();
+      }, delay);
+    };
+    loop();
+  }
+
+  if (document.body.classList.contains('experience-active')) {
+    startAmbientMotion();
+  } else {
+    const observer = new MutationObserver(() => {
+      if (document.body.classList.contains('experience-active')) {
+        startAmbientMotion();
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  }
+</script>
+
+<style>
+  .ambient-motion {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+  }
+
+  .ambient-motion__orb {
+    display: none;
+  }
+
+  .ambient-motion__orb--1 {
+    width: 300px;
+    height: 300px;
+    top: 10%;
+    left: -5%;
+    background: rgba(139, 0, 0, 0.15);
+  }
+
+  .ambient-motion__orb--2 {
+    width: 250px;
+    height: 250px;
+    bottom: 20%;
+    right: -5%;
+    background: rgba(180, 0, 0, 0.12);
+    animation-delay: -4s;
+  }
+
+  .ambient-motion__orb--3 {
+    width: 200px;
+    height: 200px;
+    top: 50%;
+    left: 40%;
+    background: rgba(100, 0, 0, 0.08);
+    animation-delay: -8s;
+  }
+
+  .ambient-motion__sweep {
+    position: absolute;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent, rgba(196,30,30,0.15), transparent);
+    animation: lightSweep 8s linear infinite;
+  }
+
+  .ambient-motion__sweep--left {
+    left: 20%;
+    animation-delay: 0s;
+  }
+
+  .ambient-motion__sweep--right {
+    right: 25%;
+    animation-delay: -4s;
+  }
+
+  @keyframes orbFloat {
+    to { transform: translate(40px, -30px) scale(1.15); }
+  }
+
+  @keyframes lightSweep {
+    0% { opacity: 0; transform: translateY(-100%); }
+    10% { opacity: 1; }
+    50% { opacity: 0.6; transform: translateY(0); }
+    90% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(100%); }
+  }
+
+  body:not(.experience-active) .ambient-motion {
+    display: none;
+  }
+
+  body.reduced-motion-active .ambient-motion {
+    display: none;
+  }
+</style>

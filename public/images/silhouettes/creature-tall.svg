@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 200" fill="none">
+  <defs>
+    <linearGradient id="ink1" x1="60" y1="0" x2="60" y2="200">
+      <stop offset="0%" stop-color="#1a0808"/>
+      <stop offset="55%" stop-color="#0a0404"/>
+      <stop offset="100%" stop-color="#000"/>
+    </linearGradient>
+    <filter id="g1" x="-20%" y="-10%" width="140%" height="120%">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#8b0000" flood-opacity="0.75"/>
+    </filter>
+  </defs>
+  <!-- Uzun ince yarat1k  eik omuz, asimetrik kollar -->
+  <g filter="url(#g1)" fill="url(#ink1)">
+    <ellipse cx="58" cy="28" rx="16" ry="20"/>
+    <path d="M42 42 C40 70 38 100 44 130 L52 130 C48 100 50 70 52 48 Z"/>
+    <path d="M52 48 C70 55 78 80 74 118 L66 116 C68 85 62 58 52 48 Z"/>
+    <!-- Uzun sol kol a_a1 -->
+    <path d="M40 55 C18 70 8 110 12 155 C14 162 20 160 18 152 C14 118 22 78 42 58 Z"/>
+    <!-- Sa kol �ne uzanm1_ pen�e -->
+    <path d="M70 52 C95 48 112 70 118 95 C120 102 112 104 110 98 C104 78 92 58 72 56 Z"/>
+    <path d="M112 96 L120 88 M112 98 L122 100 M110 102 L118 110" stroke="#1a0808" stroke-width="3" stroke-linecap="round"/>
+    <!-- Bacaklar -->
+    <path d="M46 128 C40 155 34 180 30 198 L40 198 C44 178 48 155 52 130 Z"/>
+    <path d="M60 128 C66 155 72 178 78 198 L68 198 C64 178 60 155 56 130 Z"/>
+  </g>
+  <ellipse cx="52" cy="24" rx="3.5" ry="2.5" fill="#ff2222"/>
+  <ellipse cx="66" cy="26" rx="2.5" ry="4" fill="#ff1111"/>
+  <path d="M50 36 Q58 42 66 35" stroke="#330000" stroke-width="1.5" fill="none"/>
+</svg>
