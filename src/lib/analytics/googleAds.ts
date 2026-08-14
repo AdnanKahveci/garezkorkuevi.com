@@ -1,15 +1,7 @@
 import { GOOGLE_ADS } from '@/config/analytics';
 
-function gtagSafe(...args: unknown[]) {
-  if (typeof window.gtag === 'function') window.gtag(...args);
-}
-
-/** Google Ads lead dönüşümü: AW-18382386124/KgZVCMaTnOAcEMzns71E */
+/** GTM "Randevu rezervasyonu" etiketini tetikler — dönüşüm yalnızca GTM üzerinden gider. */
 export function trackGoogleAdsLeadConversion(source?: string) {
-  gtagSafe('event', 'conversion', {
-    send_to: GOOGLE_ADS.conversionSendTo,
-  });
-
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: 'google_ads_lead',

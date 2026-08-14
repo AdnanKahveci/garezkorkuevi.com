@@ -84,8 +84,12 @@ const timeOptions = ['18:00', '19:00', '20:00', '21:00', '22:00', '23:00'];
 
     const url = buildReservationWhatsAppUrl(details);
     trackReservationSubmit();
-    const popup = window.open(url, '_blank', 'noopener,noreferrer');
-    if (!popup) window.location.href = url;
+    const popup = window.open(url, '_blank');
+    if (popup) {
+      popup.opener = null;
+    } else {
+      window.location.href = url;
+    }
 
     window.dispatchEvent(new CustomEvent('reservation-intent', { detail: { guests: details.guests } }));
     status.textContent = 'WhatsApp açıldı. Mesajı gönderdiğinde talebin ekibimize ulaşacak.';
