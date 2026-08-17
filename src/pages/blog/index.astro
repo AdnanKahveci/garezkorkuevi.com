@@ -1,0 +1,294 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { formatBlogDate, getBlogPosts } from '@/config/blog';
+import { SITE } from '@/config/site';
+
+const posts = getBlogPosts();
+
+const blogStructuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'Garez Korku Evi Blog',
+    url: `${SITE.url}/blog/`,
+    description: 'Korku evi deneyimi, takım oyunu ipuçları ve Garez hakkında rehber yazılar.',
+    inLanguage: 'tr',
+    isPartOf: { '@id': `${SITE.url}/#website` },
+    publisher: { '@id': `${SITE.url}/#organization` },
+    blogPost: posts.map((post) => ({
+      '@type': 'BlogPosting',
+      headline: post.title,
+      description: post.description,
+      url: `${SITE.url}/blog/${post.slug}/`,
+      datePublished: new Date(post.pubDate).toISOString(),
+      image: `${SITE.url}${post.image}`,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE.url },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE.url}/blog/` },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Garez Korku Evi Blog | Korku Evi Rehberi ve İpuçları"
+  description="Korku evi deneyimi, takım oyunu stratejileri ve Garez hakkında rehber yazılar. İlk kez gidecekler için ipuçları."
+  canonicalPath="/blog/"
+  structuredData={blogStructuredData}
+>
+  <header class="blog-hero">
+    <div class="blog-hero__bg" aria-hidden="true"></div>
+    <div class="blog-hero__content">
+      <nav class="breadcrumbs" aria-label="Sayfa yolu">
+        <a href="/">Ana Sayfa</a><span aria-hidden="true">/</span><span>Blog</span>
+      </nav>
+      <p class="section-kicker">KAYIT DEFTERİ</p>
+      <h1>Garez<br /><em>yazıları.</em></h1>
+      <p>Korku evi deneyimi, takım oyunu ipuçları ve kapıdan girmeden bilmen gerekenler.</p>
+    </div>
+    <p class="blog-hero__index" aria-hidden="true">LOG // {posts.length.toString().padStart(2, '0')}</p>
+  </header>
+
+  <section class="blog-page section" aria-labelledby="blog-grid-title">
+    <div class="blog-page__heading">
+      <div>
+        <p class="section-kicker">SON YAZILAR</p>
+        <h2 class="section__title" id="blog-grid-title">Karanlıktan<br />notlar.</h2>
+      </div>
+      <p>Rehberler, ipuçları ve deneyim hakkında kısa okumalar. Daha fazlası için randevu oluştur.</p>
+    </div>
+
+    <div class="blog-page__grid">
+      {posts.map((post, index) => (
+        <article class:list={['blog-card reveal-fade', index === 0 && 'blog-card--featured']}>
+          <a href={`/blog/${post.slug}/`} class="blog-card__link">
+            <div class="blog-card__image">
+              <img
+                src={post.image}
+                alt=""
+                width="800"
+                height="500"
+                loading={index === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+            </div>
+            <div class="blog-card__body">
+              <div class="blog-card__meta">
+                <span>{post.category}</span>
+                <span>{post.readTime}</span>
+              </div>
+              <h3>{post.title}</h3>
+              <p>{post.description}</p>
+              <time datetime={post.pubDate}>{formatBlogDate(post.pubDate)}</time>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+
+    <div class="blog-page__cta">
+      <p>Okumak yetmez.<br /><em>Deneyimle.</em></p>
+      <a href="/#rezervasyon" class="button button--primary">Randevu Oluştur <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .blog-hero {
+    position: relative;
+    display: grid;
+    min-height: 620px;
+    align-items: end;
+    overflow: hidden;
+    isolation: isolate;
+    padding: calc(var(--header-height) + 5rem) max(var(--page-gutter), calc((100vw - var(--content-width)) / 2)) 5rem;
+  }
+
+  .blog-hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background:
+      linear-gradient(90deg, rgba(5, 5, 5, .62), rgba(5, 5, 5, .18), rgba(5, 5, 5, .68)),
+      linear-gradient(0deg, var(--color-bg), transparent 50%),
+      url('/images/horror/garez-detail-shadow.webp') center / cover;
+    filter: saturate(.45) brightness(.68);
+  }
+
+  .blog-hero__content { position: relative; z-index: 2; width: min(100%, 820px); }
+
+  .breadcrumbs {
+    display: flex;
+    gap: .55rem;
+    margin-bottom: 3rem;
+    color: #6f6964;
+    font-size: .58rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .breadcrumbs a { text-decoration: none; }
+  .breadcrumbs a:hover { color: #fff; }
+
+  .blog-hero h1 {
+    color: #f3ede7;
+    font: 650 clamp(3.4rem, 10vw, 8.4rem)/.84 var(--font-display);
+    letter-spacing: -.06em;
+  }
+
+  .blog-hero h1 em { color: #c42d26; font-style: normal; }
+
+  .blog-hero__content > p:last-child {
+    max-width: 570px;
+    margin-top: 1.5rem;
+    color: #aaa29b;
+    font-size: .88rem;
+    line-height: 1.75;
+  }
+
+  .blog-hero__index {
+    position: absolute;
+    right: max(var(--page-gutter), calc((100vw - var(--content-width)) / 2));
+    bottom: 5.2rem;
+    color: rgba(255, 255, 255, .34);
+    font: 500 .55rem ui-monospace, monospace;
+    letter-spacing: .18em;
+  }
+
+  .blog-page__heading {
+    display: grid;
+    grid-template-columns: 1fr .55fr;
+    gap: 4rem;
+    align-items: end;
+    margin-bottom: 4rem;
+  }
+
+  .blog-page__heading > p {
+    padding-bottom: .4rem;
+    color: #817a74;
+    font-size: .8rem;
+    line-height: 1.8;
+  }
+
+  .blog-page__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .85rem;
+  }
+
+  .blog-card {
+    border: 1px solid var(--color-line);
+    background: #0d0c0b;
+    transition: border-color .25s ease, transform .25s ease;
+  }
+
+  .blog-card:hover { border-color: rgba(185, 35, 29, .42); transform: translateY(-3px); }
+
+  .blog-card--featured { grid-column: span 2; }
+
+  .blog-card__link {
+    display: grid;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .blog-card--featured .blog-card__link { grid-template-columns: 1.1fr .9fr; }
+
+  .blog-card__image {
+    position: relative;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+    background: #111;
+  }
+
+  .blog-card--featured .blog-card__image { aspect-ratio: auto; min-height: 100%; }
+
+  .blog-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(.48) contrast(1.06) brightness(.76);
+    transition: transform .65s ease, filter .45s ease;
+  }
+
+  .blog-card:hover .blog-card__image img {
+    transform: scale(1.04);
+    filter: saturate(.68) brightness(.88);
+  }
+
+  .blog-card__body {
+    display: grid;
+    align-content: start;
+    gap: .75rem;
+    padding: 1.35rem 1.25rem 1.5rem;
+  }
+
+  .blog-card__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: #9e211c;
+    font: 600 .52rem ui-monospace, monospace;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .blog-card__meta span:last-child { color: #7a746f; }
+
+  .blog-card__body h3 {
+    color: #ece5df;
+    font: 600 clamp(1rem, 1.8vw, 1.35rem)/1.25 var(--font-display);
+  }
+
+  .blog-card__body p {
+    color: #9b948e;
+    font-size: .79rem;
+    line-height: 1.75;
+  }
+
+  .blog-card__body time {
+    margin-top: .35rem;
+    color: #6f6964;
+    font: 500 .56rem ui-monospace, monospace;
+    letter-spacing: .06em;
+  }
+
+  .blog-page__cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 5rem;
+    padding: 3rem 0;
+    border-block: 1px solid var(--color-line);
+  }
+
+  .blog-page__cta p {
+    color: #d8d1ca;
+    font: 550 clamp(1.5rem, 3vw, 2.5rem)/1.25 var(--font-display);
+  }
+
+  .blog-page__cta em { color: #bd2c25; font-style: normal; }
+
+  @media (max-width: 980px) {
+    .blog-page__grid { grid-template-columns: 1fr 1fr; }
+    .blog-card--featured { grid-column: span 2; }
+    .blog-card--featured .blog-card__link { grid-template-columns: 1fr; }
+    .blog-card--featured .blog-card__image { aspect-ratio: 16/9; min-height: auto; }
+  }
+
+  @media (max-width: 760px) {
+    .blog-hero { min-height: 560px; padding-bottom: 3rem; }
+    .blog-hero__index { display: none; }
+    .blog-page__heading { grid-template-columns: 1fr; gap: 1.25rem; }
+    .blog-page__grid { grid-template-columns: 1fr; }
+    .blog-card--featured { grid-column: auto; }
+    .blog-page__cta { flex-direction: column; align-items: flex-start; }
+  }
+</style>

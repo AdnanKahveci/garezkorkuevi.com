@@ -1,0 +1,264 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { formatBlogDate, getBlogPost, getBlogPosts } from '@/config/blog';
+import { SITE } from '@/config/site';
+
+export function getStaticPaths() {
+  return getBlogPosts().map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const relatedPosts = getBlogPosts().filter((item) => item.slug !== post.slug).slice(0, 2);
+
+const articleUrl = `${SITE.url}/blog/${post.slug}/`;
+
+const articleStructuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.description,
+    url: articleUrl,
+    datePublished: new Date(post.pubDate).toISOString(),
+    inLanguage: 'tr',
+    image: `${SITE.url}${post.image}`,
+    author: { '@type': 'Organization', name: SITE.name, url: SITE.url },
+    publisher: { '@id': `${SITE.url}/#organization` },
+    mainEntityOfPage: articleUrl,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: SITE.url },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE.url}/blog/` },
+      { '@type': 'ListItem', position: 3, name: post.title, item: articleUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={`${post.title} | Garez Korku Evi Blog`}
+  description={post.description}
+  image={post.image}
+  canonicalPath={`/blog/${post.slug}/`}
+  structuredData={articleStructuredData}
+>
+  <article class="blog-article">
+    <header class="blog-article__hero">
+      <div class="blog-article__hero-bg" style={`background-image: url('${post.image}')`} aria-hidden="true"></div>
+      <div class="blog-article__hero-content">
+        <nav class="breadcrumbs" aria-label="Sayfa yolu">
+          <a href="/">Ana Sayfa</a>
+          <span aria-hidden="true">/</span>
+          <a href="/blog/">Blog</a>
+          <span aria-hidden="true">/</span>
+          <span>{post.category}</span>
+        </nav>
+        <div class="blog-article__meta">
+          <span>{post.category}</span>
+          <span>{post.readTime}</span>
+          <time datetime={post.pubDate}>{formatBlogDate(post.pubDate)}</time>
+        </div>
+        <h1>{post.title}</h1>
+        <p class="blog-article__lead">{post.description}</p>
+      </div>
+    </header>
+
+    <div class="blog-article__layout section">
+      <div class="blog-article__content" set:html={post.body} />
+
+      <aside class="blog-article__aside" aria-label="Diğer yazılar">
+        <p class="blog-article__aside-label">DİĞER YAZILAR</p>
+        <ul class="blog-article__related">
+          {relatedPosts.map((related) => (
+            <li>
+              <a href={`/blog/${related.slug}/`}>
+                <strong>{related.title}</strong>
+                <span>{formatBlogDate(related.pubDate)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a href="/#rezervasyon" class="button button--primary blog-article__cta">
+          Randevu Oluştur <span aria-hidden="true">↗</span>
+        </a>
+      </aside>
+    </div>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  .blog-article__hero {
+    position: relative;
+    min-height: 520px;
+    display: grid;
+    align-items: end;
+    overflow: hidden;
+    isolation: isolate;
+    padding: calc(var(--header-height) + 4rem) max(var(--page-gutter), calc((100vw - var(--content-width)) / 2)) 4rem;
+  }
+
+  .blog-article__hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background-position: center;
+    background-size: cover;
+    filter: saturate(.42) brightness(.55);
+  }
+
+  .blog-article__hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(0deg, var(--color-bg), transparent 42%, rgba(0, 0, 0, .55)),
+      linear-gradient(90deg, rgba(5, 5, 5, .72), rgba(5, 5, 5, .2));
+  }
+
+  .blog-article__hero-content {
+    position: relative;
+    z-index: 2;
+    width: min(100%, 860px);
+  }
+
+  .blog-article .breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem;
+    margin-bottom: 2rem;
+    color: #6f6964;
+    font-size: .58rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .blog-article .breadcrumbs a { text-decoration: none; }
+  .blog-article .breadcrumbs a:hover { color: #fff; }
+
+  .blog-article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .85rem 1.25rem;
+    margin-bottom: 1.25rem;
+    color: #9e211c;
+    font: 600 .56rem ui-monospace, monospace;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .blog-article__meta time { color: #7a746f; }
+
+  .blog-article__hero h1 {
+    color: #f3ede7;
+    font: 650 clamp(2.2rem, 6vw, 4.5rem)/1.02 var(--font-display);
+    letter-spacing: -.04em;
+  }
+
+  .blog-article__lead {
+    max-width: 640px;
+    margin-top: 1.25rem;
+    color: #b5aea8;
+    font-size: .92rem;
+    line-height: 1.8;
+  }
+
+  .blog-article__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+    padding-top: clamp(3rem, 6vw, 5rem);
+    padding-bottom: clamp(4rem, 8vw, 6rem);
+  }
+
+  .blog-article__content {
+    color: #c4bdb6;
+    font-size: .92rem;
+    line-height: 1.85;
+  }
+
+  .blog-article__content h2 {
+    margin: 2.5rem 0 1rem;
+    color: #ece5df;
+    font: 600 clamp(1.25rem, 2.5vw, 1.75rem)/1.25 var(--font-display);
+  }
+
+  .blog-article__content h2:first-child { margin-top: 0; }
+
+  .blog-article__content p { margin: 0 0 1.15rem; }
+
+  .blog-article__content ul,
+  .blog-article__content ol {
+    margin: 0 0 1.25rem;
+    padding-left: 1.25rem;
+  }
+
+  .blog-article__content li { margin-bottom: .55rem; }
+
+  .blog-article__content strong { color: #e8e1db; font-weight: 600; }
+
+  .blog-article__aside {
+    position: sticky;
+    top: calc(var(--header-height) + 2rem);
+    padding: 1.35rem;
+    border: 1px solid var(--color-line);
+    background: rgba(13, 12, 11, .92);
+  }
+
+  .blog-article__aside-label {
+    margin-bottom: 1rem;
+    color: #958e88;
+    font-size: .56rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+  }
+
+  .blog-article__related {
+    display: grid;
+    gap: 0;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .blog-article__related a {
+    display: grid;
+    gap: .35rem;
+    padding: .9rem 0;
+    border-bottom: 1px solid var(--color-line);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .blog-article__related a:hover strong { color: #fff; }
+
+  .blog-article__related strong {
+    color: #d9d2cc;
+    font: 600 .82rem/1.35 var(--font-display);
+    transition: color .2s ease;
+  }
+
+  .blog-article__related span {
+    color: #7a746f;
+    font: 500 .54rem ui-monospace, monospace;
+    letter-spacing: .06em;
+  }
+
+  .blog-article__cta { width: 100%; justify-content: center; }
+
+  @media (max-width: 900px) {
+    .blog-article__layout { grid-template-columns: 1fr; }
+    .blog-article__aside { position: static; }
+  }
+
+  @media (max-width: 760px) {
+    .blog-article__hero { min-height: 460px; padding-bottom: 3rem; }
+  }
+</style>

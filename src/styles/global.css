@@ -391,6 +391,99 @@ button, input, select, textarea { font: inherit; }
 .faq__item[open] summary::after { content: '−'; }
 .faq__item p { padding: 0 2rem 1.4rem 3.65rem; color: #aaa29b; font-size: .8rem; line-height: 1.8; }
 
+/* Rules */
+.section--rules {
+  padding-block: clamp(5rem, 10vw, 8rem);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(148, 20, 16, .08), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,.015), transparent 42%),
+    #090807;
+  border-block: 1px solid rgba(255,255,255,.05);
+}
+
+.rules-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, .72fr) minmax(0, 1.28fr);
+  gap: clamp(2.5rem, 8vw, 7rem);
+  align-items: start;
+}
+
+.rules-layout__heading { position: sticky; top: calc(var(--header-height) + 2rem); }
+
+.rules-layout__intro {
+  max-width: 360px;
+  margin: 1.25rem 0 1.75rem;
+  color: #aaa29b;
+  font-size: .81rem;
+  line-height: 1.75;
+}
+
+.rules-notice {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: .85rem;
+  align-items: start;
+  max-width: 380px;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(185, 35, 29, .34);
+  background: rgba(130, 15, 12, .12);
+}
+
+.rules-notice__mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(185, 35, 29, .5);
+  color: #de352d;
+  font: 700 .72rem var(--font-display);
+}
+
+.rules-notice p {
+  margin: 0;
+  color: #d9d2cc;
+  font-size: .78rem;
+  line-height: 1.7;
+}
+
+.rules-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--color-line);
+}
+
+.rules-list__item {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 1rem;
+  align-items: start;
+  padding: 1.15rem 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.rules-list__no {
+  color: #9e211c;
+  font: 600 .56rem ui-monospace, monospace;
+  letter-spacing: .08em;
+}
+
+.rules-list__item p {
+  margin: 0;
+  color: #c4bdb6;
+  font-size: .82rem;
+  line-height: 1.8;
+}
+
+.final-cta__privacy a {
+  color: #d7cec6;
+  text-underline-offset: .18em;
+}
+
+.final-cta__privacy a:hover { color: #fff; }
+
 /* Location / Contact */
 .section--location { padding-top: 0; }
 .location-card { display: grid; grid-template-columns: 1.15fr .85fr; min-height: 470px; border: 1px solid var(--color-line); background: #0d0c0b; }
@@ -468,6 +561,8 @@ body.reduced-motion-active .web-reveal { display: none !important; }
   .game-card__image::after { background: linear-gradient(0deg, rgba(8,7,7,.7), transparent 55%); }
   .faq-layout { grid-template-columns: 1fr; }
   .faq-layout__heading { position: static; }
+  .rules-layout { grid-template-columns: 1fr; }
+  .rules-layout__heading { position: static; }
 }
 
 @media (max-width: 760px) {

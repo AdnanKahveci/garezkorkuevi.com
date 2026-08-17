@@ -5,6 +5,7 @@ import GlitchText from '@/components/effects/GlitchText.astro';
 import SectionWebReveal from '@/components/effects/SectionWebReveal.astro';
 import ContactForm from '@/components/ContactForm.astro';
 import { WHATSAPP_URL } from '@/config/contact';
+import { HOUSE_RULES, RULES_ACCEPTANCE } from '@/config/rules';
 import { BUSINESS, BUSINESS_ADDRESS, EXPERIENCE, SITE } from '@/config/site';
 
 const stories = [
@@ -237,6 +238,30 @@ const homeStructuredData = [
     </div>
   </section>
 
+  <section class="section section--rules" id="kurallar" aria-labelledby="rules-title">
+    <div class="rules-layout">
+      <div class="rules-layout__heading">
+        <p class="section-kicker">KURALLAR / 07</p>
+        <h2 class="section__title" id="rules-title">Oyuna girmeden<br /><em>okuman gerekir.</em></h2>
+        <p class="rules-layout__intro">
+          Güvenli ve akıcı bir deneyim için aşağıdaki kurallar geçerlidir. Rezervasyon oluşturarak bu kuralları kabul etmiş sayılırsın.
+        </p>
+        <aside class="rules-notice" aria-label="Kural kabul bildirimi">
+          <span class="rules-notice__mark" aria-hidden="true">!</span>
+          <p>{RULES_ACCEPTANCE}</p>
+        </aside>
+      </div>
+      <ol class="rules-list">
+        {HOUSE_RULES.map((rule, index) => (
+          <li class="rules-list__item reveal-fade">
+            <span class="rules-list__no" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+            <p>{rule}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
   <section class="section section--location" id="iletisim" data-safe-zone="contact">
     <div class="location-card">
       <div class="location-card__map">
@@ -257,7 +282,7 @@ const homeStructuredData = [
         )}
       </div>
       <div class="location-card__content">
-        <p class="section-kicker">İLETİŞİM / 07</p>
+        <p class="section-kicker">İLETİŞİM / 08</p>
         <h2 class="section__title">Kapıyı<br /><em>bul.</em></h2>
         <p>
           {BUSINESS.detailsVerified
@@ -292,7 +317,10 @@ const homeStructuredData = [
       <div class="final-cta__form-wrap">
         <ContactForm />
       </div>
-      <p class="final-cta__privacy">Form ödeme almaz. WhatsApp açılmadan hiçbir bilgi gönderilmez.</p>
+      <p class="final-cta__privacy">
+        Form ödeme almaz. WhatsApp açılmadan hiçbir bilgi gönderilmez.
+        <a href="#kurallar">Oyun kurallarını</a> okuduğunu kabul etmiş sayılırsın.
+      </p>
     </div>
   </section>
 
